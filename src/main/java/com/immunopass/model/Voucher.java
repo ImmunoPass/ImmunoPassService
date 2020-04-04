@@ -7,14 +7,14 @@ import lombok.Getter;
 @Builder
 public class Voucher {
     private final Long id;
-    private final String voucher_code;
-    private final Long issuer_id;
-    private final String user_name;
-    private final String user_mobile;
-    private final String user_emp_id;
-    private final String user_government_id;
-    private final String user_location;
-    private final String status; // TODO:change from String to enum
-    private final Long order_id;
-    private final Long immunopass_id;
+    private final String voucherCode;
+    private final Long issuerId;
+    private final String userName;
+    private final String userMobile;
+    private final String userEmpId;
+    private final String userGovernmentId;
+    private final String userLocation;
+    private final VoucherStatus status;
+    private final Long orderId;
+    private final Long immunopassId;
 }

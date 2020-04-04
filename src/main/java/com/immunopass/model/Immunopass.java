@@ -12,7 +12,7 @@ public class Immunopass {
     private final String userEmpId;
     private final String userGovernmentId;
     private final String userLocation;
-    private final String immunoTestResult; // TODO: string to enum
+    private final ImmunoTestResult immunoTestResult;
     private final String immunopassCode;
 
 }
