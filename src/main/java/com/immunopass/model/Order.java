@@ -7,8 +7,8 @@ import lombok.Getter;
 @Builder
 public class Order {
     private final Long id;
-    private final Integer voucher_count;
-    private final String uploaded_file;
-    private final String status; // TODO: change from string to enum
-    private final Long created_by;
+    private final Integer voucherCount;
+    private final String uploadedFile;
+    private final OrderStatus status;
+    private final Long createdBy;
 }
