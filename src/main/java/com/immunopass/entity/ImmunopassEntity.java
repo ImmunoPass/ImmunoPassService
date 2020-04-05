@@ -2,6 +2,8 @@ package com.immunopass.entity;
 
 import java.time.LocalDateTime;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -26,17 +28,27 @@ import lombok.Setter;
 @Setter(value = AccessLevel.PACKAGE)
 public class ImmunopassEntity {
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     private String userName;
+
     private String userMobile;
+
     private String userEmpId;
+
     private String userGovernmentId;
+
     private String userLocation;
+
+    @Enumerated(value = EnumType.STRING)
     private ImmunoTestResult immunoTestResult;
+
     private String immunopassCode;
+
     @CreationTimestamp
     private LocalDateTime createdAt;
+
     @UpdateTimestamp
     private LocalDateTime updatedAt;
 }

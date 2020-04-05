@@ -2,6 +2,8 @@ package com.immunopass.entity;
 
 import java.time.LocalDateTime;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -26,14 +28,21 @@ import lombok.Setter;
 @Setter(value = AccessLevel.PACKAGE)
 public class OtpEntity {
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     private Long validTill;
+
     private String otp;
+
     private Integer tryCount;
+
+    @Enumerated(value = EnumType.STRING)
     private OtpStatus status;
+
     @CreationTimestamp
     private LocalDateTime createdAt;
+
     @UpdateTimestamp
     private LocalDateTime updatedAt;
 }

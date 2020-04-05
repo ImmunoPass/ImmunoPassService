@@ -2,6 +2,7 @@ package com.immunopass.model;
 
 import com.immunopass.enums.AccountIdentifierType;
 import com.immunopass.enums.EntityStatus;
+import com.immunopass.enums.OrganizationType;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -15,6 +16,6 @@ public class Account {
     private final AccountIdentifierType identifierType;
     private final String passwordHash;
     private final Long organizationId;
-    private final String organizationType;
+    private final OrganizationType organizationType;
     private final EntityStatus status;
 }

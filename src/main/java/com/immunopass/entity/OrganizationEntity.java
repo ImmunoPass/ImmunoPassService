@@ -2,6 +2,8 @@ package com.immunopass.entity;
 
 import java.time.LocalDateTime;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -29,13 +31,22 @@ public class OrganizationEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     private String name;
+
+    @Enumerated(value = EnumType.STRING)
     private OrganizationType type;
+
+    @Enumerated(value = EnumType.STRING)
     private EntityStatus status;
+
     private Integer totalVouchers;
+
     private Integer usedVouchers;
+
     @CreationTimestamp
     private LocalDateTime createdAt;
+
     @UpdateTimestamp
     private LocalDateTime updatedAt;
 }

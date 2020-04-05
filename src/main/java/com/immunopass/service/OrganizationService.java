@@ -18,7 +18,7 @@ public class OrganizationService implements OrganizationController {
     OrganizationRepository organizationRepository;
 
     @Override
-    public Organization createOrganization(Organization organization) {
+    public Organization createOrganization(final Organization organization) {
         OrganizationEntity organizationEntity =
                 OrganizationEntity.builder()
                         .name(organization.getName())
@@ -32,7 +32,7 @@ public class OrganizationService implements OrganizationController {
     }
 
     @Override
-    public Organization getOrganization(Long id) {
+    public Organization getOrganization(final Long id) {
         return organizationRepository
                 .findById(id)
                 .map(this::mapEntityToModel)
