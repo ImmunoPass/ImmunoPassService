@@ -1,4 +1,4 @@
-package com.immunopass.model.enums;
+package com.immunopass.enums;
 
 public enum AccountIdentifierType {
     MOBILE, EMAIL

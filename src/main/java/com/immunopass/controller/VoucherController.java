@@ -1,27 +1,26 @@
 package com.immunopass.controller;
 
+import javax.validation.constraints.NotNull;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 import com.immunopass.model.Voucher;
-import com.immunopass.service.VoucherService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
+
 
 @RestController
 @RequestMapping("/v1/vouchers")
-public class VoucherController {
-    private VoucherService voucherService;
+public interface VoucherController {
 
-    @Autowired
-    public VoucherController(VoucherService voucherService) {
-        this.voucherService = voucherService;
-    }
+    @PostMapping("")
+    Voucher createVoucher(@NotNull @RequestBody final Voucher voucher);
 
     @GetMapping("/{id}")
-    public Voucher getVoucher(@PathVariable Long id) {
-        return voucherService.getVoucherById(id);
-    }
+    Voucher getVoucher(@PathVariable Long id);
 
     @GetMapping("/{id}/process")
-    public void processVoucher(@PathVariable Long id, @RequestParam("action") String action) {
-        voucherService.processVoucher(id, action);
-    }
+    void processVoucher(@PathVariable Long id, @RequestParam("action") String action);
 }
