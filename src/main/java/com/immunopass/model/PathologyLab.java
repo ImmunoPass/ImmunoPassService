@@ -1,8 +1,9 @@
 package com.immunopass.model;
 
-import com.immunopass.model.enums.EntityStatus;
+import com.immunopass.enums.EntityStatus;
 import lombok.Builder;
 import lombok.Getter;
+
 
 @Getter
 @Builder

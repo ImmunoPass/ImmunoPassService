@@ -1,4 +1,4 @@
-package com.immunopass.enity;
+package com.immunopass.entity;
 
 import java.time.LocalDateTime;
 import javax.persistence.Entity;
@@ -7,18 +7,18 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
+import com.immunopass.enums.OtpStatus;
 
 
-@Entity
-public class Organization {
+@Entity(name = "otp")
+public class Otp {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;
-    private String name;
-    private OrganizationType type;
-    private EntityStatus status;
-    private Integer totalVouchers;
-    private Integer usedVouchers;
+    private Long validTill;
+    private String otp;
+    private Integer tryCount;
+    private OtpStatus status;
     @CreationTimestamp
     private LocalDateTime createdAt;
     @UpdateTimestamp

@@ -1,4 +1,4 @@
-package com.immunopass.enity;
+package com.immunopass.entity;
 
 import java.time.LocalDateTime;
 import javax.persistence.Entity;
@@ -7,17 +7,20 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
+import com.immunopass.enums.EntityStatus;
+import com.immunopass.enums.OrganizationType;
 
 
-@Entity
-public class Order {
+@Entity(name = "organization")
+public class Organization {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;
-    private Integer voucherCount;
-    private String uploadedFile;
-    private OrderStatus status;
-    private Long createdBy;
+    private String name;
+    private OrganizationType type;
+    private EntityStatus status;
+    private Integer totalVouchers;
+    private Integer usedVouchers;
     @CreationTimestamp
     private LocalDateTime createdAt;
     @UpdateTimestamp

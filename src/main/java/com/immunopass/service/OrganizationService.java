@@ -1,12 +1,12 @@
 package com.immunopass.service;
 
-import com.immunopass.model.enums.EntityStatus;
-import com.immunopass.model.Organization;
-import com.immunopass.model.enums.OrganizationType;
-import org.springframework.stereotype.Service;
-
 import java.util.ArrayList;
 import java.util.List;
+import org.springframework.stereotype.Service;
+import com.immunopass.enums.EntityStatus;
+import com.immunopass.enums.OrganizationType;
+import com.immunopass.model.Organization;
+
 
 @Service
 public class OrganizationService {

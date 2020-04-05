@@ -2,6 +2,7 @@ package com.immunopass.service;
 
 import org.springframework.stereotype.Service;
 
+
 @Service
 public class OtpService {
 
@@ -16,7 +17,6 @@ public class OtpService {
     }
 
     public boolean verifyOtp(String otp, String identifier, String identifier_type) {
-        if (otp == "123") return true;
-        return false;
+        return otp == "123";
     }
 }
