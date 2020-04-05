@@ -22,16 +22,12 @@ public class AuthInterceptor implements HandlerInterceptor {
 
         if (Objects.isNull(accessToken)) {
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            return false;
-        }
-
-
-
-        if (authService.isAuthenticated(accessToken)) {
+        } else if (authService.isAuthenticated(accessToken)) {
             return true;
+        } else {
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         }
 
-        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         return false;
     }
 

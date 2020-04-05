@@ -37,7 +37,7 @@ public class OtpService implements OtpController {
 
     public boolean verifyOtp(String otp, String identifier, String identifier_type) {
 
-        // make jwt generate call
+        // TODO make jwt generate call
         //JwtTokenUtil.generateToken()
 
         return otp == "123";

@@ -14,7 +14,8 @@ import java.util.List;
 @Configuration
 public class WebApp implements WebMvcConfigurer {
 
-    public static List<String> AUTH_EXCLUDE_PATTERNS = new ArrayList();
+    // TODO add otp end points
+    public static List<String> AUTH_EXCLUDE_PATTERNS = new ArrayList<>();
 
     @Bean
     public AuthInterceptor getAuthInterceptor() {
