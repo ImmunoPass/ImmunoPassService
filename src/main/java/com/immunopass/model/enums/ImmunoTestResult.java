@@ -1,4 +1,4 @@
-package com.immunopass.model;
+package com.immunopass.model.enums;
 
 public enum ImmunoTestResult {
     GREEN, RED

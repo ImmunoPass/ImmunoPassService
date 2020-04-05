@@ -1,15 +1,19 @@
 package com.immunopass.model;
 
+import com.immunopass.model.enums.EntityStatus;
+import com.immunopass.model.enums.OrganizationType;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 
 @Getter
 @Builder
+@AllArgsConstructor
 public class Organization {
     private final Long id;
     private final String name;
-    private final OrganizationType type; // TODO: change from string to enum
-    private final EntityStatus status; // TODO: change from string to enum
+    private final OrganizationType type;
+    private final EntityStatus status;
     private final Integer totalVouchers;
     private final Integer usedVouchers;
 }
