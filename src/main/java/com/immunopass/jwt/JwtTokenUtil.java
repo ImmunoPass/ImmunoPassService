@@ -3,10 +3,13 @@ package com.immunopass.jwt;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.security.Keys;
 import lombok.experimental.UtilityClass;
 import org.springframework.beans.factory.annotation.Value;
 
+import javax.crypto.SecretKey;
 import java.io.Serializable;
+import java.security.Key;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -23,13 +26,16 @@ public class JwtTokenUtil implements Serializable {
     // token validity set to 5 hours
     private static final long JWT_TOKEN_VALIDITY = TimeUnit.DAYS.toMillis(1);
 
-    private static final SignatureAlgorithm signatureAlgorithm = SignatureAlgorithm.ES256;
+    private static final SignatureAlgorithm signatureAlgorithm = SignatureAlgorithm.HS256;
 
     @Value("${jwt.secret}")
     private String secret;
 
     @Value("${jwt.issuer}")
     private String issuer;
+
+    private Key secretKey = Keys.hmacShaKeyFor(secret.getBytes());
+
 
     public Long getAccountIdFromToken(String token) throws NumberFormatException {
         return Long.parseLong(getClaimFromToken(token, Claims::getSubject));
@@ -76,7 +82,7 @@ public class JwtTokenUtil implements Serializable {
                 setIssuedAt(new Date(System.currentTimeMillis())).
                 setIssuer(issuer).
                 setExpiration(new Date(System.currentTimeMillis() + JWT_TOKEN_VALIDITY*1000)).
-                signWith(signatureAlgorithm, secret).
+                signWith(secretKey, signatureAlgorithm).
                 compact();
     }
 
