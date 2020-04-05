@@ -2,6 +2,8 @@ package com.immunopass.entity;
 
 import java.time.LocalDateTime;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -10,6 +12,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 import com.immunopass.enums.AccountIdentifierType;
 import com.immunopass.enums.EntityStatus;
+import com.immunopass.enums.OrganizationType;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -27,17 +30,29 @@ import lombok.Setter;
 @Setter(value = AccessLevel.PACKAGE)
 public class AccountEntity {
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     private String name;
+
     private String identifier;
+
+    @Enumerated(value = EnumType.STRING)
     private AccountIdentifierType identifierType;
+
     private String passwordHash;
+
     private Long organizationId;
-    private String organizationType;
+
+    @Enumerated(value = EnumType.STRING)
+    private OrganizationType organizationType;
+
+    @Enumerated(value = EnumType.STRING)
     private EntityStatus status;
+
     @CreationTimestamp
     private LocalDateTime createdAt;
+
     @UpdateTimestamp
     private LocalDateTime updatedAt;
 }
