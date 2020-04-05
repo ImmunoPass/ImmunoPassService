@@ -1,5 +1,7 @@
 package com.immunopass.model;
 
+import com.immunopass.model.enums.AccountIdentifierType;
+import com.immunopass.model.enums.EntityStatus;
 import lombok.Builder;
 import lombok.Getter;
 

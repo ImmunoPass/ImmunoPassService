@@ -1,10 +1,13 @@
 package com.immunopass.model;
 
+import com.immunopass.model.enums.VoucherStatus;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 
 @Getter
 @Builder
+@AllArgsConstructor
 public class Voucher {
     private final Long id;
     private final String voucherCode;
