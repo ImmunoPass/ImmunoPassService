@@ -1,6 +1,7 @@
 package com.immunopass.controller;
 
 import java.util.List;
+import javax.validation.constraints.NotNull;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -15,11 +16,11 @@ import com.immunopass.model.Organization;
 public interface OrganizationController {
 
     @GetMapping("/{id}")
-    public Organization getOrganization(@PathVariable Long id);
+    Organization getOrganization(@PathVariable Long id);
 
     @GetMapping("")
-    public List<Organization> getOrganizations();
+    List<Organization> getOrganizations();
 
-    @PostMapping
-    public Organization createOrganization(@RequestBody Organization organization);
+    @PostMapping("")
+    Organization createOrganization(@NotNull @RequestBody Organization organization);
 }

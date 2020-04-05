@@ -10,8 +10,8 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/v1/otps")
 public interface OtpController {
 
-    @PostMapping
-    public boolean createOtp(@RequestParam("action") String action,
+    @PostMapping("")
+    boolean createOtp(@RequestParam("action") String action,
             @RequestParam("identifier") String identifier,
             @RequestParam("identifier_type") String identifier_type,
             @RequestParam(value = "Otp", required = false) String otp);

@@ -13,8 +13,8 @@ import com.immunopass.model.Voucher;
 public interface VoucherController {
 
     @GetMapping("/{id}")
-    public Voucher getVoucher(@PathVariable Long id);
+    Voucher getVoucher(@PathVariable Long id);
 
     @GetMapping("/{id}/process")
-    public void processVoucher(@PathVariable Long id, @RequestParam("action") String action);
+    void processVoucher(@PathVariable Long id, @RequestParam("action") String action);
 }
