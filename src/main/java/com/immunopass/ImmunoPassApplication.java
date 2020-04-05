@@ -10,4 +10,5 @@ public class ImmunoPassApplication {
 		SpringApplication.run(ImmunoPassApplication.class, args);
 	}
 
+
 }
