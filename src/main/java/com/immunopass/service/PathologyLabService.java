@@ -1,6 +1,5 @@
 package com.immunopass.service;
 
-import javax.validation.constraints.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.immunopass.controller.PathologyLabController;
@@ -15,7 +14,7 @@ public class PathologyLabService implements PathologyLabController {
 
     @Autowired PathologyLabRepository pathologyLabRepository;
 
-    @Override public PathologyLab createPathologyLab(@NotNull final PathologyLab pathologyLab) {
+    @Override public PathologyLab createPathologyLab(final PathologyLab pathologyLab) {
         PathologyLabEntity pathologyLabEntity =
                 PathologyLabEntity.builder()
                         .name(pathologyLab.getName())

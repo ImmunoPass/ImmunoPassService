@@ -16,11 +16,11 @@ import com.immunopass.model.Organization;
 public interface OrganizationController {
 
     @GetMapping("/{id}")
-    Organization getOrganization(@PathVariable Long id);
+    Organization getOrganization(@NotNull @PathVariable final Long id);
 
     @GetMapping("")
     List<Organization> getOrganizations();
 
     @PostMapping("")
-    Organization createOrganization(@NotNull @RequestBody Organization organization);
+    Organization createOrganization(@NotNull @RequestBody final Organization organization);
 }

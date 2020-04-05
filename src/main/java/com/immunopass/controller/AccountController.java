@@ -13,6 +13,6 @@ import com.immunopass.model.Account;
 public interface AccountController {
 
     @PostMapping("")
-    Account createAccount(@NotNull @RequestBody Account account);
+    Account createAccount(@NotNull @RequestBody final Account account);
 
 }

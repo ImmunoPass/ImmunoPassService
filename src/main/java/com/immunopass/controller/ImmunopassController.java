@@ -5,14 +5,17 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import com.immunopass.model.PathologyLab;
+import com.immunopass.model.Immunopass;
 
 
 @RestController
-@RequestMapping("/v1/pathology_labs")
-public interface PathologyLabController {
+@RequestMapping("/v1")
+public interface ImmunopassController {
 
-    @PostMapping("")
-    PathologyLab createPathologyLab(@NotNull @RequestBody final PathologyLab pathologyLab);
+    @PostMapping("/immunopasses")
+    Immunopass createImmunopass(@NotNull @RequestBody final Immunopass immunopass);
+
+    @PostMapping("/verify_immunopass")
+    Immunopass verifyImmunopass(@NotNull @RequestBody final Immunopass immunopass);
 
 }

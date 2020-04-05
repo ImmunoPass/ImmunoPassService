@@ -1,6 +1,5 @@
 package com.immunopass.service;
 
-import javax.validation.constraints.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.immunopass.controller.AccountController;
@@ -18,7 +17,7 @@ public class AccountService implements AccountController {
     AccountRepository accountRepository;
 
     @Override
-    public Account createAccount(@NotNull final Account account) {
+    public Account createAccount(final Account account) {
         return accountRepository.findByIdentifierAndIdentifierType(account.getIdentifier(), account.getIdentifierType())
                 .map(this::mapEntityToModel)
                 .orElseGet(() -> {
