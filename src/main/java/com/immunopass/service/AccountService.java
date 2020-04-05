@@ -36,7 +36,7 @@ public class AccountService implements AccountController {
                 });
     }
 
-    public Account fetchAccountByIdentifier(String identifier, AccountIdentifierType identifierType) {
+    public Account fetchAccountByIdentifierAndIdentifierType(String identifier, AccountIdentifierType identifierType) {
         return accountRepository
                 .findByIdentifierAndIdentifierType(identifier, identifierType)
                 .map(this::mapEntityToModel)
