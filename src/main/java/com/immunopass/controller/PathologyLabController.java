@@ -1,6 +1,6 @@
 package com.immunopass.controller;
 
-import javax.validation.constraints.NotNull;
+import javax.validation.Valid;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -13,6 +13,6 @@ import com.immunopass.model.PathologyLab;
 public interface PathologyLabController {
 
     @PostMapping("")
-    PathologyLab createPathologyLab(@NotNull @RequestBody final PathologyLab pathologyLab);
+    PathologyLab createPathologyLab(@Valid @RequestBody final PathologyLab pathologyLab);
 
 }

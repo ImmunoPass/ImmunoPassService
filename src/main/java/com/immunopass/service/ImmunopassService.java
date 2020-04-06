@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import com.immunopass.controller.ImmunopassController;
 import com.immunopass.entity.ImmunopassEntity;
 import com.immunopass.model.Immunopass;
+import com.immunopass.model.VerifyImmunopassRequest;
 import com.immunopass.repository.ImmunopassRepository;
 
 
@@ -12,7 +13,7 @@ import com.immunopass.repository.ImmunopassRepository;
 public class ImmunopassService implements ImmunopassController {
 
     @Autowired
-    ImmunopassRepository immunopassRepository;
+    private ImmunopassRepository immunopassRepository;
 
     @Override public Immunopass createImmunopass(final Immunopass immunopass) {
         ImmunopassEntity immunopassEntity =
@@ -29,7 +30,7 @@ public class ImmunopassService implements ImmunopassController {
         return mapEntityToModel(immunopassEntity);
     }
 
-    @Override public Immunopass verifyImmunopass(final Immunopass immunopass) {
+    @Override public Immunopass verifyImmunopass(final VerifyImmunopassRequest immunopass) {
         if(immunopass.getImmunopassCode()!=null) {
             return immunopassRepository
                     .findByImmunopassCode(immunopass.getImmunopassCode())

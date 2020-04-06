@@ -1,16 +1,16 @@
 package com.immunopass.controller.request;
 
+import javax.validation.constraints.NotNull;
 import com.immunopass.enums.IdentifierType;
-import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 @Getter
-@Setter
-@AllArgsConstructor
-@NoArgsConstructor
+@Builder
+@NotNull
 public class SendOtpRequest {
+    @NotNull
     private String identifier;
+    @NotNull
     private IdentifierType identifierType;
 }
