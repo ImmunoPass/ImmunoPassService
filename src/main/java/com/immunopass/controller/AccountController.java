@@ -1,6 +1,6 @@
 package com.immunopass.controller;
 
-import javax.validation.constraints.NotNull;
+import javax.validation.Valid;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -12,7 +12,7 @@ import com.immunopass.model.Account;
 @RequestMapping("/v1/accounts")
 public interface AccountController {
 
-    @PostMapping("")
-    Account createAccount(@NotNull @RequestBody final Account account);
+    @PostMapping
+    Account createAccount(@Valid @RequestBody final Account account);
 
 }

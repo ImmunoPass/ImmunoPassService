@@ -14,7 +14,7 @@ import com.immunopass.repository.AccountRepository;
 public class AccountService implements AccountController {
 
     @Autowired
-    AccountRepository accountRepository;
+    private AccountRepository accountRepository;
 
     @Override
     public Account createAccount(final Account account) {

@@ -1,5 +1,11 @@
 package com.immunopass.service;
 
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.util.TimeZone;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestBody;
 import com.immunopass.controller.OtpController;
 import com.immunopass.controller.request.SendOtpRequest;
 import com.immunopass.controller.request.VerifyOtpRequest;
@@ -13,13 +19,6 @@ import com.immunopass.jwt.UserDetails;
 import com.immunopass.model.Otp;
 import com.immunopass.repository.AccountRepository;
 import com.immunopass.repository.OtpRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.*;
-
-import java.time.Instant;
-import java.time.LocalDateTime;
-import java.util.TimeZone;
 
 
 @Service
@@ -27,9 +26,9 @@ public class OtpService implements OtpController {
     private static Long TEN_MINUTES_MILLIS = new Long(600000);
 
     @Autowired
-    OtpRepository otpRepository;
+    private OtpRepository otpRepository;
     @Autowired
-    AccountRepository accountRepository;
+    private AccountRepository accountRepository;
     @Autowired
     private JwtToken jwtToken;
 
@@ -67,7 +66,7 @@ public class OtpService implements OtpController {
     private SendOtpResponse otpToSendOtpResponse(Otp otp) {
         return SendOtpResponse.builder()
                 .identifier(otp.getIdentifier())
-                .identifier_type(otp.getIdentifier_type())
+                .identifierType(otp.getIdentifierType())
                 .status(otp.getStatus())
                 .tryCount(otp.getTryCount())
                 .validTill(otp.getValidTill().toString())
@@ -123,7 +122,7 @@ public class OtpService implements OtpController {
                 .tryCount(otpEntity.getTryCount())
                 .validTill(otpEntity.getValidTill())
                 .identifier(otpEntity.getIdentifier())
-                .identifier_type(otpEntity.getIdentifierType())
+                .identifierType(otpEntity.getIdentifierType())
                 .build();
 
     }

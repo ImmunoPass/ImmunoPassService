@@ -12,7 +12,8 @@ import com.immunopass.repository.PathologyLabRepository;
 @Service
 public class PathologyLabService implements PathologyLabController {
 
-    @Autowired PathologyLabRepository pathologyLabRepository;
+    @Autowired
+    private PathologyLabRepository pathologyLabRepository;
 
     @Override public PathologyLab createPathologyLab(final PathologyLab pathologyLab) {
         PathologyLabEntity pathologyLabEntity =

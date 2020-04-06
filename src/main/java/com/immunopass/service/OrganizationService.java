@@ -15,7 +15,7 @@ import com.immunopass.repository.OrganizationRepository;
 public class OrganizationService implements OrganizationController {
 
     @Autowired
-    OrganizationRepository organizationRepository;
+    private OrganizationRepository organizationRepository;
 
     @Override
     public Organization createOrganization(final Organization organization) {

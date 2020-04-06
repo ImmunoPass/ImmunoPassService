@@ -1,11 +1,5 @@
 package com.immunopass.jwt;
 
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
-import io.jsonwebtoken.security.Keys;
-
-import org.springframework.stereotype.Component;
 import java.security.Key;
 import java.util.Date;
 import java.util.HashMap;
@@ -13,6 +7,11 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
+import org.springframework.stereotype.Component;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.security.Keys;
 
 
 @Component
@@ -23,12 +22,12 @@ public class JwtToken {
 
     private static final SignatureAlgorithm signatureAlgorithm = SignatureAlgorithm.HS256;
 
-    private final String secret = "2FP8Wlc4ADlMdxti2jLRsdbasjkdbajskasl6781357263dsnmbdjsadkjuteqwiewF9IjBMQyYKsIVsBPIDgX";
+    private final String secret =
+            "2FP8Wlc4ADlMdxti2jLRsdbasjkdbajskasl6781357263dsnmbdjsadkjuteqwiewF9IjBMQyYKsIVsBPIDgX";
 
     private final String issuer = "immunopass";
 
     private Key secretKey = Keys.hmacShaKeyFor(secret.getBytes());
-
 
     public Long getAccountIdFromToken(String token) throws NumberFormatException {
         return Long.parseLong(getClaimFromToken(token, Claims::getSubject));
@@ -68,17 +67,15 @@ public class JwtToken {
     }
 
     private String doGenerateToken(Map<String, Object> claims, String subject) {
-        String token = Jwts.builder().
+        return Jwts.builder().
                 setId(UUID.randomUUID().toString()).
                 setClaims(claims).
                 setSubject(subject).
                 setIssuedAt(new Date(System.currentTimeMillis())).
                 setIssuer(issuer).
-                setExpiration(new Date(System.currentTimeMillis() + JWT_TOKEN_VALIDITY*1000)).
+                setExpiration(new Date(System.currentTimeMillis() + JWT_TOKEN_VALIDITY * 1000)).
                 signWith(secretKey, signatureAlgorithm).
                 compact();
-
-        return token;
     }
 
     public Boolean canTokenBeRefreshed(String token) {

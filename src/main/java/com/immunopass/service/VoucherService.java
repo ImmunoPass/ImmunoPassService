@@ -12,7 +12,8 @@ import com.immunopass.repository.VoucherRepository;
 @Service
 public class VoucherService implements VoucherController {
 
-    @Autowired VoucherRepository voucherRepository;
+    @Autowired
+    private VoucherRepository voucherRepository;
 
     @Override public Voucher createVoucher(final Voucher voucher) {
         VoucherEntity voucherEntity =

@@ -10,7 +10,7 @@ import lombok.Getter;
 public class SendOtpResponse {
     private String validTill;
     private String identifier;
-    private IdentifierType identifier_type;
+    private IdentifierType identifierType;
     private Integer tryCount;
     private OtpStatus status;
 }
