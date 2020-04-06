@@ -2,6 +2,7 @@ package com.immunopass.controller;
 
 import com.immunopass.controller.request.SendOtpRequest;
 import com.immunopass.controller.request.VerifyOtpRequest;
+import com.immunopass.controller.response.VerifyOtpResponse;
 import org.springframework.web.bind.annotation.*;
 
 
@@ -14,5 +15,5 @@ public interface OtpController {
 
     @PostMapping("/verify")
     @ResponseBody
-    boolean verifyOtp(@RequestBody VerifyOtpRequest verifyOtpRequest);
+    VerifyOtpResponse verifyOtp(@RequestBody VerifyOtpRequest verifyOtpRequest);
 }
