@@ -9,8 +9,6 @@ import lombok.Getter;
 @Builder
 @NotNull
 public class VerifyImmunopassRequest {
-    @NotNull
     private final String userMobile;
-    @NotNull
     private final String immunopassCode;
 }

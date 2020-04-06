@@ -13,14 +13,14 @@ import com.immunopass.controller.response.VerifyOtpResponse;
 
 
 @RestController
-@RequestMapping("/v1/otps")
+@RequestMapping("/v1")
 public interface OtpController {
 
-    @PostMapping
+    @PostMapping("/send_otp")
     @ResponseBody
     SendOtpResponse sendOtp(@Valid @RequestBody SendOtpRequest sendOtpRequest);
 
-    @PostMapping("/verify")
+    @PostMapping("/verify_otp")
     @ResponseBody
     VerifyOtpResponse verifyOtp(@Valid @RequestBody VerifyOtpRequest verifyOtpRequest);
 }
