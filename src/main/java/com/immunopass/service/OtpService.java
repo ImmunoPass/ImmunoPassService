@@ -3,6 +3,7 @@ package com.immunopass.service;
 import com.immunopass.controller.OtpController;
 import com.immunopass.controller.request.SendOtpRequest;
 import com.immunopass.controller.request.VerifyOtpRequest;
+import com.immunopass.controller.response.VerifyOtpResponse;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
 
@@ -17,7 +18,7 @@ public class OtpService implements OtpController {
     }
 
     @Override
-    public boolean verifyOtp(VerifyOtpRequest verifyOtpRequest) {
-        return true;
+    public VerifyOtpResponse verifyOtp(VerifyOtpRequest verifyOtpRequest) {
+        return new VerifyOtpResponse("123");
     }
 }
