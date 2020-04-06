@@ -6,5 +6,5 @@ import lombok.Getter;
 @Getter
 @Builder
 public class VerifyOtpResponse {
-    private String at;
+    private String accessToken;
 }

@@ -4,11 +4,8 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
-import lombok.experimental.UtilityClass;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 
-import javax.crypto.SecretKey;
-import java.io.Serializable;
 import java.security.Key;
 import java.util.Date;
 import java.util.HashMap;
@@ -18,21 +15,17 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 
 
-@UtilityClass
-public class JwtTokenUtil implements Serializable {
-
-    private static final long serialVersionUID = -2550185165626007488L;
+@Component
+public class JwtToken {
 
     // token validity set to 5 hours
     private static final long JWT_TOKEN_VALIDITY = TimeUnit.DAYS.toMillis(1);
 
     private static final SignatureAlgorithm signatureAlgorithm = SignatureAlgorithm.HS256;
 
-    @Value("${jwt.secret}")
-    private String secret;
+    private final String secret = "2FP8Wlc4ADlMdxti2jLRsdbasjkdbajskasl6781357263dsnmbdjsadkjuteqwiewF9IjBMQyYKsIVsBPIDgX";
 
-    @Value("${jwt.issuer}")
-    private String issuer;
+    private final String issuer = "immunopass";
 
     private Key secretKey = Keys.hmacShaKeyFor(secret.getBytes());
 
@@ -55,7 +48,7 @@ public class JwtTokenUtil implements Serializable {
     }
 
     private Claims getAllClaimsFromToken(String token) {
-        return Jwts.parser().setSigningKey(secret).parseClaimsJws(token).getBody();
+        return Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody();
     }
 
     private Boolean isTokenExpired(String token) {
@@ -75,7 +68,7 @@ public class JwtTokenUtil implements Serializable {
     }
 
     private String doGenerateToken(Map<String, Object> claims, String subject) {
-        return Jwts.builder().
+        String token = Jwts.builder().
                 setId(UUID.randomUUID().toString()).
                 setClaims(claims).
                 setSubject(subject).
@@ -84,18 +77,22 @@ public class JwtTokenUtil implements Serializable {
                 setExpiration(new Date(System.currentTimeMillis() + JWT_TOKEN_VALIDITY*1000)).
                 signWith(secretKey, signatureAlgorithm).
                 compact();
+        return token;
     }
 
     public Boolean canTokenBeRefreshed(String token) {
         return (!isTokenExpired(token) || ignoreTokenExpiration(token));
     }
 
-    public Boolean validateToken(String token) {
+    public Long validateToken(String token) {
         try {
-            Jwts.parser().setSigningKey(secret).parseClaimsJws(token);
-            return true;
+            Jwts.parser()
+                    .setSigningKey(secretKey)
+                    .parseClaimsJws(token);
+            Long accountId = getAccountIdFromToken(token);
+            return accountId;
         } catch (Exception e) {
-            return false;
+            return null;
         }
     }
 }

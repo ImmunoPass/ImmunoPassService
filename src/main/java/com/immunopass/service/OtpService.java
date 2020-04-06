@@ -8,7 +8,10 @@ import com.immunopass.controller.response.VerifyOtpResponse;
 import com.immunopass.entity.OtpEntity;
 import com.immunopass.enums.IdentifierType;
 import com.immunopass.enums.OtpStatus;
+import com.immunopass.jwt.JwtToken;
+import com.immunopass.jwt.UserDetails;
 import com.immunopass.model.Otp;
+import com.immunopass.repository.AccountRepository;
 import com.immunopass.repository.OtpRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -25,9 +28,15 @@ public class OtpService implements OtpController {
 
     @Autowired
     OtpRepository otpRepository;
+    @Autowired
+    AccountRepository accountRepository;
+    @Autowired
+    private JwtToken jwtToken;
+
 
     @Override
     public SendOtpResponse sendOtp(@RequestBody SendOtpRequest sendOtpRequest) {
+        // TODO: Implement logic to send SMS
         Otp otp = fetchOtpByIdentifierAndIdentifierType(sendOtpRequest.getIdentifier(), sendOtpRequest.getIdentifierType());
         if (otp == null) {
             OtpEntity otpEntity = OtpEntity.builder()
@@ -76,16 +85,21 @@ public class OtpService implements OtpController {
         Otp otp = fetchOtpByIdentifier(verifyOtpRequest.getIdentifier());
         if (otp == null) {
             return VerifyOtpResponse.builder()
-                    .at("Otp failed")
+                    .accessToken("Otp failed")
                     .build();
         } else if (!otp.getOtp().equals(verifyOtpRequest.getOtp())) {
             return VerifyOtpResponse.builder()
-                    .at("Otp failed")
+                    .accessToken("Otp failed")
                     .build();
         }
-        return VerifyOtpResponse.builder()
-                .at("123")
+        UserDetails userDetails = UserDetails.builder()
+                .accountId(1234l)
+                .identifier(verifyOtpRequest.getIdentifier())
                 .build();
+        String accessToken = jwtToken.generateToken(userDetails);
+
+        return VerifyOtpResponse.builder()
+                .accessToken(accessToken).build();
     }
 
     public Otp fetchOtpByIdentifier(String identifier) {
