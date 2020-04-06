@@ -33,7 +33,6 @@ public class OtpService implements OtpController {
     @Autowired
     private JwtToken jwtToken;
 
-    @Autowired private JwtToken jwtToken;
 
     @Override
     public SendOtpResponse sendOtp(@RequestBody SendOtpRequest sendOtpRequest) {
