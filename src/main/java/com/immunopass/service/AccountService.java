@@ -4,7 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.immunopass.controller.AccountController;
 import com.immunopass.entity.AccountEntity;
-import com.immunopass.enums.AccountIdentifierType;
+import com.immunopass.enums.IdentifierType;
 import com.immunopass.enums.EntityStatus;
 import com.immunopass.model.Account;
 import com.immunopass.repository.AccountRepository;
@@ -35,7 +35,7 @@ public class AccountService implements AccountController {
                 });
     }
 
-    public Account fetchAccountByIdentifierAndIdentifierType(String identifier, AccountIdentifierType identifierType) {
+    public Account fetchAccountByIdentifierAndIdentifierType(String identifier, IdentifierType identifierType) {
         return accountRepository
                 .findByIdentifierAndIdentifierType(identifier, identifierType)
                 .map(this::mapEntityToModel)

@@ -1,6 +1,6 @@
 package com.immunopass.controller.request;
 
-import com.immunopass.enums.AccountIdentifierType;
+import com.immunopass.enums.IdentifierType;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -12,5 +12,5 @@ import lombok.Setter;
 @NoArgsConstructor
 public class SendOtpRequest {
     private String identifier;
-    private AccountIdentifierType identifier_type;
+    private IdentifierType identifierType;
 }

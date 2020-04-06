@@ -9,9 +9,11 @@ import org.springframework.stereotype.Service;
 @Slf4j
 public class AuthService {
 
-    @Autowired private JwtToken jwtToken;
 
-    public boolean isAuthenticated(String accessToken) {
+    @Autowired
+    private JwtToken jwtToken;
+
+    public Long isAuthenticated(String accessToken) {
         return jwtToken.validateToken(accessToken);
     }
 }
