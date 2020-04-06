@@ -1,131 +1,116 @@
 package com.immunopass.service;
 
-import java.time.Instant;
 import java.time.LocalDateTime;
-import java.util.TimeZone;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
 import com.immunopass.controller.OtpController;
-import com.immunopass.controller.request.SendOtpRequest;
-import com.immunopass.controller.request.VerifyOtpRequest;
-import com.immunopass.controller.response.SendOtpResponse;
-import com.immunopass.controller.response.VerifyOtpResponse;
 import com.immunopass.entity.OtpEntity;
 import com.immunopass.enums.IdentifierType;
 import com.immunopass.enums.OtpStatus;
 import com.immunopass.jwt.JwtToken;
-import com.immunopass.jwt.UserDetails;
-import com.immunopass.model.Otp;
+import com.immunopass.model.SendOtpRequest;
+import com.immunopass.model.SendOtpResponse;
+import com.immunopass.model.VerifyOtpRequest;
+import com.immunopass.model.VerifyOtpResponse;
 import com.immunopass.repository.AccountRepository;
 import com.immunopass.repository.OtpRepository;
+import com.immunopass.restclient.SMSService;
 
 
 @Service
 public class OtpService implements OtpController {
-    private static Long TEN_MINUTES_MILLIS = new Long(600000);
 
-    @Autowired
-    private OtpRepository otpRepository;
     @Autowired
     private AccountRepository accountRepository;
     @Autowired
+    private OtpRepository otpRepository;
+    @Autowired
     private JwtToken jwtToken;
-
+    @Autowired
+    private SMSService smsService;
 
     @Override
-    public SendOtpResponse sendOtp(@RequestBody SendOtpRequest sendOtpRequest) {
-        //TODO: Check if account exists
-        //TODO: Check if otp is present for identifier
-        // TODO: Implement logic to send SMS
-        Otp otp = fetchOtpByIdentifierAndIdentifierType(sendOtpRequest.getIdentifier(), sendOtpRequest.getIdentifierType());
-        if (otp == null) {
-            OtpEntity otpEntity = OtpEntity.builder()
-                    .otp(generateNewOtp())
-                    .status(OtpStatus.UNVERIFIED)
-                    .tryCount(1)
-                    .validTill(LocalDateTime.ofInstant(
-                            Instant.ofEpochMilli(System.currentTimeMillis() + TEN_MINUTES_MILLIS),
-                            TimeZone.getDefault().toZoneId()))
-                    .identifier(sendOtpRequest.getIdentifier())
-                    .identifierType(sendOtpRequest.getIdentifierType())
-                    .build();
-
-            otp =  mapEntityToModel(otpRepository.save(otpEntity));
-        } else {
-            OtpEntity otpEntity = otpRepository.findById(otp.getId()).get();
-            if (otp.getTryCount() <=3) {
-                otpEntity.setTryCount(otp.getTryCount() + 1);
-            } else {
-                otpEntity.setTryCount(3);
-                otpEntity.setStatus(OtpStatus.INVALID);
-            }
-            otp = mapEntityToModel(otpRepository.save(otpEntity));
-        }
-        return otpToSendOtpResponse(otp);
+    public SendOtpResponse sendOtp(@RequestBody SendOtpRequest otpRequest) {
+        return accountRepository
+                .findByIdentifierAndIdentifierType(otpRequest.getIdentifier(), otpRequest.getIdentifierType())
+                .map(accountEntity -> sendOtp(accountEntity.getIdentifier(), accountEntity.getIdentifierType(),
+                        accountEntity.getName()))
+                .orElse(null);
     }
 
-    private SendOtpResponse otpToSendOtpResponse(Otp otp) {
+    private SendOtpResponse sendOtp(String identifier, IdentifierType identifierType, String name) {
+        return otpRepository
+                .findFirstByIdentifierOrderByCreatedAtDesc(identifier)
+                .filter(otpEntity -> LocalDateTime.now().isBefore(otpEntity.getValidTill()))
+                .filter(otpEntity -> OtpStatus.UNVERIFIED.equals(otpEntity.getStatus()))
+                .map(otpEntity -> {
+                    if (otpEntity.getTryCount() < 3) {
+                        otpEntity.setTryCount(otpEntity.getTryCount() + 1);
+                        return otpToSendOtpResponse(otpRepository.save(otpEntity));
+                    } else {
+                        //TODO: Return Error Response
+                        return SendOtpResponse.builder().build();
+                    }
+                })
+                .orElseGet(() -> generateNewOtp(identifier, identifierType, name));
+    }
+
+    private SendOtpResponse generateNewOtp(String identifier, IdentifierType identifierType, String name) {
+        OtpEntity otpEntity = OtpEntity.builder()
+                .otp(smsService.generateOtp())
+                .status(OtpStatus.UNVERIFIED)
+                .tryCount(1)
+                .validTill(LocalDateTime.now().plusMinutes(15))
+                .identifier(identifier)
+                .identifierType(identifierType)
+                .build();
+        otpEntity = otpRepository.save(otpEntity);
+        smsService.sendOTPSMS(name, identifier, otpEntity.getOtp());
+        return otpToSendOtpResponse(otpEntity);
+    }
+
+    private SendOtpResponse otpToSendOtpResponse(OtpEntity otpEntity) {
         return SendOtpResponse.builder()
-                .identifier(otp.getIdentifier())
-                .identifierType(otp.getIdentifierType())
-                .status(otp.getStatus())
-                .tryCount(otp.getTryCount())
-                .validTill(otp.getValidTill().toString())
-                .build();
-    }
-
-    private String generateNewOtp() {
-        return "123456";
-    }
-
-
-
-    @Override
-    public VerifyOtpResponse verifyOtp(VerifyOtpRequest verifyOtpRequest) {
-        Otp otp = fetchOtpByIdentifier(verifyOtpRequest.getIdentifier());
-        if (otp == null) {
-            return VerifyOtpResponse.builder()
-                    .accessToken("Otp failed")
-                    .build();
-        } else if (!otp.getOtp().equals(verifyOtpRequest.getOtp())) {
-            return VerifyOtpResponse.builder()
-                    .accessToken("Otp failed")
-                    .build();
-        }
-        UserDetails userDetails = UserDetails.builder()
-                .accountId(1234l)
-                .identifier(verifyOtpRequest.getIdentifier())
-                .build();
-        String accessToken = jwtToken.generateToken(userDetails);
-
-        return VerifyOtpResponse.builder()
-                .accessToken(accessToken).build();
-    }
-
-    public Otp fetchOtpByIdentifier(String identifier) {
-        return otpRepository
-                .findByIdentifier(identifier)
-                .map(this::mapEntityToModel)
-                .orElse(null);
-    }
-
-    public Otp fetchOtpByIdentifierAndIdentifierType(String identifier, IdentifierType identifierType) {
-        return otpRepository
-                .findByIdentifierAndIdentifierType(identifier, identifierType)
-                .map(this::mapEntityToModel)
-                .orElse(null);
-    }
-
-    private Otp mapEntityToModel(OtpEntity otpEntity) {
-        return Otp.builder().id(otpEntity.getId())
-                .otp(otpEntity.getOtp())
-                .status(otpEntity.getStatus())
-                .tryCount(otpEntity.getTryCount())
-                .validTill(otpEntity.getValidTill())
                 .identifier(otpEntity.getIdentifier())
                 .identifierType(otpEntity.getIdentifierType())
+                .status(otpEntity.getStatus())
+                .tryCount(otpEntity.getTryCount())
+                .validTill(otpEntity.getValidTill().toString())
                 .build();
-
     }
+
+    @Override
+    public VerifyOtpResponse verifyOtp(VerifyOtpRequest otpRequest) {
+        return otpRepository
+                .findFirstByIdentifierAndOtpOrderByCreatedAtDesc(otpRequest.getIdentifier(), otpRequest.getOtp())
+                .filter(otpEntity -> LocalDateTime.now().isBefore(otpEntity.getValidTill()))
+                .filter(otpEntity -> OtpStatus.UNVERIFIED.equals(otpEntity.getStatus()))
+                .map(otpEntity -> {
+                    otpEntity.setStatus(OtpStatus.VERIFIED);
+                    return otpRepository.save(otpEntity);
+                })
+                .map(this::verifyOtpSuccess)
+                .orElseGet(this::verifyOtpFailure);
+    }
+
+    private VerifyOtpResponse verifyOtpSuccess(OtpEntity otpEntity) {
+        return accountRepository
+                .findByIdentifierAndIdentifierType(otpEntity.getIdentifier(), otpEntity.getIdentifierType())
+                .map(accountEntity ->
+                        VerifyOtpResponse
+                                .builder()
+                                .accessToken(jwtToken.generateToken(accountEntity))
+                                .build())
+                .orElse(null);
+    }
+
+    //TODO: Define proper failure response.
+    private VerifyOtpResponse verifyOtpFailure() {
+        return VerifyOtpResponse
+                .builder()
+                .accessToken("OTP verification failed.")
+                .build();
+    }
+
 }

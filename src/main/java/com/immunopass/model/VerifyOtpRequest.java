@@ -1,4 +1,4 @@
-package com.immunopass.controller.request;
+package com.immunopass.model;
 
 import javax.validation.constraints.NotNull;
 import lombok.Builder;

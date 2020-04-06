@@ -1,4 +1,4 @@
-package com.immunopass.controller.response;
+package com.immunopass.model;
 
 import com.immunopass.enums.IdentifierType;
 import com.immunopass.enums.OtpStatus;

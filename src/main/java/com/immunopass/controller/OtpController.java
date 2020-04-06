@@ -6,10 +6,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
-import com.immunopass.controller.request.SendOtpRequest;
-import com.immunopass.controller.request.VerifyOtpRequest;
-import com.immunopass.controller.response.SendOtpResponse;
-import com.immunopass.controller.response.VerifyOtpResponse;
+import com.immunopass.model.SendOtpRequest;
+import com.immunopass.model.VerifyOtpRequest;
+import com.immunopass.model.SendOtpResponse;
+import com.immunopass.model.VerifyOtpResponse;
 
 
 @RestController
