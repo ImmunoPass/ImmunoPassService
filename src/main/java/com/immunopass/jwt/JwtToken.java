@@ -4,8 +4,8 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
-import org.springframework.stereotype.Component;
 
+import org.springframework.stereotype.Component;
 import java.security.Key;
 import java.util.Date;
 import java.util.HashMap;
@@ -77,6 +77,7 @@ public class JwtToken {
                 setExpiration(new Date(System.currentTimeMillis() + JWT_TOKEN_VALIDITY*1000)).
                 signWith(secretKey, signatureAlgorithm).
                 compact();
+
         return token;
     }
 

@@ -15,7 +15,7 @@ import com.immunopass.repository.AccountRepository;
 import com.immunopass.repository.OtpRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.*;
 
 import java.time.Instant;
 import java.time.LocalDateTime;
@@ -33,6 +33,7 @@ public class OtpService implements OtpController {
     @Autowired
     private JwtToken jwtToken;
 
+    @Autowired private JwtToken jwtToken;
 
     @Override
     public SendOtpResponse sendOtp(@RequestBody SendOtpRequest sendOtpRequest) {
@@ -125,5 +126,6 @@ public class OtpService implements OtpController {
                 .identifier(otpEntity.getIdentifier())
                 .identifier_type(otpEntity.getIdentifierType())
                 .build();
+
     }
 }

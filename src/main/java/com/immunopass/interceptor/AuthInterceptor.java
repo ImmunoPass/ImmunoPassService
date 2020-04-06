@@ -10,6 +10,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.util.Objects;
 
 
+
 public class AuthInterceptor implements HandlerInterceptor {
 
     @Autowired private AuthService authService;
@@ -19,7 +20,8 @@ public class AuthInterceptor implements HandlerInterceptor {
 
         String accessToken = request.getHeader(RequestHeader.ACCESS_TOKEN);
 
-        if (Objects.isNull(accessToken)) {
+
+        if (accessToken == null) {
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
         } else if (authService.isAuthenticated(accessToken) != null) {
             return true;
