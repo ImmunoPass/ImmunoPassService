@@ -18,7 +18,8 @@ public class SMSService {
     private final String numbers = "0123456789";
     private Random random;
     private RestTemplate restTemplate;
-    private final String endpoint = "http://13.235.128.146:3000";
+    private final String endpoint = "${sms.endpoint}";
+    private final String auth = "${sms.auth}";
 
     public SMSService() {
         random = new Random();
@@ -49,7 +50,7 @@ public class SMSService {
                 .to(to)
                 .userName(userName).build();
         HttpHeaders requestHeaders = new HttpHeaders();
-        requestHeaders.set("Authentication", "4db2c2e9de64630879effbde15720a16");
+        requestHeaders.set("Authentication", auth);
         requestHeaders.setContentType(MediaType.APPLICATION_JSON);
         List<MediaType> accepts = new ArrayList<>();
         accepts.add(MediaType.ALL);
