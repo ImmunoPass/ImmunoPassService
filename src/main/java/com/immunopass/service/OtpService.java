@@ -35,6 +35,8 @@ public class OtpService implements OtpController {
 
     @Override
     public SendOtpResponse sendOtp(@RequestBody SendOtpRequest sendOtpRequest) {
+        //TODO: Check if account exists
+        //TODO: Check if otp is present for identifier
         // TODO: Implement logic to send SMS
         Otp otp = fetchOtpByIdentifierAndIdentifierType(sendOtpRequest.getIdentifier(), sendOtpRequest.getIdentifierType());
         if (otp == null) {
@@ -52,7 +54,7 @@ public class OtpService implements OtpController {
             otp =  mapEntityToModel(otpRepository.save(otpEntity));
         } else {
             OtpEntity otpEntity = otpRepository.findById(otp.getId()).get();
-            if (otp.getTryCount() <=1) {
+            if (otp.getTryCount() <=3) {
                 otpEntity.setTryCount(otp.getTryCount() + 1);
             } else {
                 otpEntity.setTryCount(3);
