@@ -1,30 +1,30 @@
 package com.immunopass;
 
 import com.immunopass.interceptor.AuthInterceptor;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.util.AntPathMatcher;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
-import java.util.ArrayList;
-import java.util.List;
 
 @EnableWebMvc
 @Configuration
-public class WebApp implements WebMvcConfigurer {
+public class WebApp extends WebMvcConfigurerAdapter {
 
-    // TODO add otp end points
-    public static List<String> AUTH_EXCLUDE_PATTERNS = new ArrayList<>();
-
+    @Bean
     public AuthInterceptor getAuthInterceptor() {
         return new AuthInterceptor();
     }
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
+        super.addInterceptors(registry);
         registry.addInterceptor(getAuthInterceptor()).
                 addPathPatterns("/**").
-                excludePathPatterns(AUTH_EXCLUDE_PATTERNS);
+                excludePathPatterns("/v1/otps/**").
+                pathMatcher(new AntPathMatcher());
     }
 }
 
