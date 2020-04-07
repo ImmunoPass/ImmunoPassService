@@ -7,7 +7,9 @@ import com.immunopass.entity.VoucherEntity;
 import com.immunopass.enums.VoucherStatus;
 import com.immunopass.model.Voucher;
 import com.immunopass.repository.VoucherRepository;
-import com.immunopass.restclient.SMSService;
+
+import javax.validation.Valid;
+import java.util.List;
 
 
 @Service
@@ -16,43 +18,45 @@ public class VoucherService implements VoucherController {
     @Autowired
     private VoucherRepository voucherRepository;
 
-    @Autowired
-    private SMSService smsService;
-
-    @Override public Voucher createVoucher(final Voucher voucher) {
-        String code = null;
-        while (checkCodeForUniqueness(code) == false) {
-            code = smsService.generateUniqueCode(8);
-        }
+    public Voucher createVoucher(final Voucher voucher) {
         VoucherEntity voucherEntity =
                 VoucherEntity.builder()
-                        .voucherCode(code)
+                        .voucherCode(voucher.getVoucherCode())
                         .issuerId(voucher.getIssuerId())
                         .userName(voucher.getUserName())
                         .userMobile(voucher.getUserMobile())
                         .userEmpId(voucher.getUserEmpId())
                         .userGovernmentId(voucher.getUserGovernmentId())
                         .userLocation(voucher.getUserLocation())
-                        .status(VoucherStatus.ALLOTTED)
+                        .status(voucher.getStatus())
                         .orderId(voucher.getOrderId())
+                        .userGovtIDType(voucher.getUserGovtIDType())
                         .build();
         voucherEntity = voucherRepository.save(voucherEntity);
-        smsService.sendVoucher(voucherEntity.getUserMobile(), voucherEntity.getVoucherCode(),
-                voucherEntity.getUserName());
         return mapEntityToModel(voucherEntity);
     }
 
     @Override
-    public Voucher getVoucher(Long id) {
-        return voucherRepository
-                .findById(id)
-                .map(this::mapEntityToModel)
-                .orElse(null);
+    public void claim(@Valid Long id) {
+        voucherRepository.updateVoucherStatus(VoucherStatus.REDEEMED, id);
     }
 
-    @Override
-    public void processVoucher(Long id, String action) {
-        System.out.println("Performing action " + action + " on voucher = " + id);
+
+    public List<Voucher> getVouchersByOrderID(Long orderID) {
+        return voucherRepository.getVouchersForOrder(orderID);
+    }
+
+
+    public void updateVoucherStatusForOrder(Long orderID, VoucherStatus voucherStatus) {
+        voucherRepository.updateVoucherStatusForOrder(voucherStatus, orderID);
+    }
+
+    public void updateVoucherStatus(Long voucherID, VoucherStatus voucherStatus) {
+        voucherRepository.updateVoucherStatusForOrder(voucherStatus, voucherID);
+    }
+
+    public void increaseRetryCount(Long voucherID, String reason) {
+        voucherRepository.increaseRetryCount(voucherID, reason);
     }
 
     private Voucher mapEntityToModel(VoucherEntity voucherEntity) {
@@ -64,17 +68,10 @@ public class VoucherService implements VoucherController {
                 .userMobile(voucherEntity.getUserMobile())
                 .userEmpId(voucherEntity.getUserEmpId())
                 .userGovernmentId(voucherEntity.getUserGovernmentId())
+                .userGovtIDType(voucherEntity.getUserGovtIDType())
                 .userLocation(voucherEntity.getUserLocation())
                 .status(voucherEntity.getStatus())
                 .orderId(voucherEntity.getIssuerId())
                 .build();
     }
-
-    private boolean checkCodeForUniqueness(String code) {
-        if (code == null || voucherRepository.findByVoucherCode(code).isPresent()) {
-            return false;
-        }
-        return true;
-    }
-
 }

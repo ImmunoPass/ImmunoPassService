@@ -1,6 +1,7 @@
 package com.immunopass.controller;
 
 import javax.validation.Valid;
+
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -15,12 +16,6 @@ import com.immunopass.model.Voucher;
 @RequestMapping("/v1/vouchers")
 public interface VoucherController {
 
-    @PostMapping("")
-    Voucher createVoucher(@Valid @RequestBody final Voucher voucher);
-
-    @GetMapping("/{id}")
-    Voucher getVoucher(@PathVariable Long id);
-
-    @GetMapping("/{id}/process")
-    void processVoucher(@PathVariable Long id, @RequestParam("action") String action);
+    @PostMapping("/{id}/claim")
+    void claim(@Valid @RequestBody final Long id);
 }

@@ -5,5 +5,5 @@ import lombok.experimental.UtilityClass;
 @UtilityClass
 public class RequestHeader {
 
-    public static String ACCESS_TOKEN = "accessToken";
+    public static final String ACCESS_TOKEN = "accessToken";
 }

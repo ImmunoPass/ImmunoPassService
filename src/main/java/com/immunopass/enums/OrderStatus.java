@@ -1,5 +1,5 @@
 package com.immunopass.enums;
 
 public enum OrderStatus {
-    UNPROCESSED, PROCESSING, PROCESSED
+    FAILED, PROCESSING, PROCESSED, CREATED
 }

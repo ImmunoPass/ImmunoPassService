@@ -1,5 +1,13 @@
 package com.immunopass.restclient;
 
+import com.immunopass.model.Voucher;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.*;
+import org.springframework.http.converter.HttpMessageConverter;
+import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
+import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
+
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -7,17 +15,6 @@ import java.util.List;
 import java.util.Random;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.RequestEntity;
-import org.springframework.http.ResponseEntity;
-import org.springframework.http.converter.HttpMessageConverter;
-import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
-import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
 
 
 @Service
@@ -98,7 +95,8 @@ public class SMSService {
                     new RequestEntity(request, requestHeaders, HttpMethod.POST,
                             new URI(endpoint + endpointPath)
                     );
-            ResponseEntity<SendSMSResponse> otpResponse = restTemplate.exchange(requestEntity, SendSMSResponse.class);
+            ResponseEntity<SendSMSResponse> otpResponse = restTemplate.exchange(
+                    requestEntity, SendSMSResponse.class);
 
             if (otpResponse.getStatusCode() == HttpStatus.OK) {
                 return true;
@@ -117,6 +115,41 @@ public class SMSService {
         requestHeaders.setContentType(MediaType.APPLICATION_JSON);
         requestHeaders.setAccept(Stream.of(MediaType.ALL).collect(Collectors.toList()));
         return requestHeaders;
+    }
+
+    public boolean sendVoucherSMS(Voucher voucher) {
+        SendVoucherRequest request = SendVoucherRequest.builder()
+                .to(voucher.getUserMobile())
+                .userMobileNumber(voucher.getUserMobile())
+                .userName(voucher.getUserName())
+                .voucherCode(voucher.getVoucherCode())
+                .build();
+        HttpHeaders requestHeaders = new HttpHeaders();
+        requestHeaders.set("Authentication", auth);
+        requestHeaders.setContentType(MediaType.APPLICATION_JSON);
+        List<MediaType> accepts = new ArrayList<>();
+        accepts.add(MediaType.ALL);
+        requestHeaders.setAccept(accepts);
+        try {
+            RequestEntity<SendVoucherRequest> requestEntity =
+                    new RequestEntity<>(
+                            request,
+                            requestHeaders,
+                            HttpMethod.POST,
+                            new URI(endpoint + "/v1/sms/send-voucher")
+                    );
+            ResponseEntity<SendVoucherResponse> response = restTemplate.exchange(
+                    requestEntity, SendVoucherResponse.class);
+
+            if (response.getStatusCode() == HttpStatus.OK && response.getBody().getStatus().equals("OK")) {
+                return true;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+        return false;
+
     }
 
 }

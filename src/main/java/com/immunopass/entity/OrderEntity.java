@@ -1,13 +1,8 @@
 package com.immunopass.entity;
 
 import java.time.LocalDateTime;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
+
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 import com.immunopass.enums.OrderStatus;
@@ -31,18 +26,27 @@ public class OrderEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(name = "voucher_count")
     private Integer voucherCount;
 
+    @Column(name = "uploaded_file")
     private String uploadedFile;
 
+    @Column(name = "uuid")
+    private String uuid;
+
     @Enumerated(value = EnumType.STRING)
+    @Column(name = "status")
     private OrderStatus status;
 
+    @Column(name = "created_by")
     private Long createdBy;
 
     @CreationTimestamp
+    @Column(name = "created_at")
     private LocalDateTime createdAt;
 
     @UpdateTimestamp
+    @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 }
