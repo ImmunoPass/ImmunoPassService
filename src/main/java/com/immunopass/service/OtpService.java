@@ -59,7 +59,7 @@ public class OtpService implements OtpController {
 
     private SendOtpResponse generateNewOtp(String identifier, IdentifierType identifierType, String name) {
         OtpEntity otpEntity = OtpEntity.builder()
-                .otp(smsService.generateNumSequence(6))
+                .otp(smsService.generateNumSequence(6, false))
                 .status(OtpStatus.UNVERIFIED)
                 .tryCount(1)
                 .validTill(LocalDateTime.now().plusMinutes(15))
