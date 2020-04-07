@@ -1,13 +1,13 @@
 package com.immunopass.service;
 
-import com.immunopass.restclient.SMSService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 import com.immunopass.controller.ImmunopassController;
 import com.immunopass.entity.ImmunopassEntity;
 import com.immunopass.model.Immunopass;
 import com.immunopass.model.VerifyImmunopassRequest;
 import com.immunopass.repository.ImmunopassRepository;
+import com.immunopass.restclient.SMSService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 
 @Service
@@ -20,6 +20,10 @@ public class ImmunopassService implements ImmunopassController {
     private SMSService smsService;
 
     @Override public Immunopass createImmunopass(final Immunopass immunopass) {
+        String code = null;
+        while (checkCodeForUniqueness(code) ==false) {
+            code = smsService.generateNumSequence(8,true);
+        };
         ImmunopassEntity immunopassEntity =
                 ImmunopassEntity.builder()
                         .userName(immunopass.getUserName())
@@ -27,7 +31,7 @@ public class ImmunopassService implements ImmunopassController {
                         .userEmpId(immunopass.getUserMobile())
                         .userGovernmentId(immunopass.getUserGovernmentId())
                         .userLocation(immunopass.getUserLocation())
-                        .immunopassCode(smsService.generateNumSequence(8))
+                        .immunopassCode(code)
                         .immunoTestResult(immunopass.getImmunoTestResult())
                         .build();
         immunopassEntity = immunopassRepository.save(immunopassEntity);
@@ -62,6 +66,11 @@ public class ImmunopassService implements ImmunopassController {
                 .immunopassCode(immunopassEntity.getImmunopassCode())
                 .immunoTestResult(immunopassEntity.getImmunoTestResult())
                 .build();
+    }
+
+    private boolean checkCodeForUniqueness(String code) {
+        if (code == null || immunopassRepository.findByImmunopassCode(code).isPresent()) return false;
+        return true;
     }
 
 }

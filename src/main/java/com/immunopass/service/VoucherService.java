@@ -20,9 +20,13 @@ public class VoucherService implements VoucherController {
     private SMSService smsService;
 
     @Override public Voucher createVoucher(final Voucher voucher) {
+        String code = null;
+        while (checkCodeForUniqueness(code) ==false) {
+            code = smsService.generateNumSequence(8,true);
+        };
         VoucherEntity voucherEntity =
                 VoucherEntity.builder()
-                        .voucherCode(smsService.generateNumSequence(8))
+                        .voucherCode(code)
                         .issuerId(voucher.getIssuerId())
                         .userName(voucher.getUserName())
                         .userMobile(voucher.getUserMobile())
@@ -63,6 +67,11 @@ public class VoucherService implements VoucherController {
                 .status(voucherEntity.getStatus())
                 .orderId(voucherEntity.getIssuerId())
                 .build();
+    }
+
+    private boolean checkCodeForUniqueness(String code) {
+        if (code == null || voucherRepository.findByVoucherCode(code).isPresent()) return false;
+        return true;
     }
 
 }
