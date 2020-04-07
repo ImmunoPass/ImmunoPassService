@@ -1,3 +1,6 @@
+# properties
+src/main/resources/application.properties
+
 # Compiled class file
 target/
 *.class
