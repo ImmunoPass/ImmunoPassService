@@ -1,5 +1,6 @@
 package com.immunopass.service;
 
+import com.immunopass.restclient.SMSService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.immunopass.controller.VoucherController;
@@ -15,10 +16,13 @@ public class VoucherService implements VoucherController {
     @Autowired
     private VoucherRepository voucherRepository;
 
+    @Autowired
+    private SMSService smsService;
+
     @Override public Voucher createVoucher(final Voucher voucher) {
         VoucherEntity voucherEntity =
                 VoucherEntity.builder()
-                        .voucherCode("RANDOM_CODE")
+                        .voucherCode(smsService.generateNumSequence(8))
                         .issuerId(voucher.getIssuerId())
                         .userName(voucher.getUserName())
                         .userMobile(voucher.getUserMobile())
@@ -29,6 +33,7 @@ public class VoucherService implements VoucherController {
                         .orderId(voucher.getOrderId())
                         .build();
         voucherEntity = voucherRepository.save(voucherEntity);
+        smsService.sendVoucher(voucherEntity.getUserMobile(), voucherEntity.getVoucherCode(), voucherEntity.getUserName());
         return mapEntityToModel(voucherEntity);
     }
 
