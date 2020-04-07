@@ -18,8 +18,8 @@ import java.util.stream.Stream;
 
 @Service
 public class SMSService {
-    private final int OTP_LENGTH = 6;
-    private final String numbers = "0123456789";
+    private final String numericString = "0123456789";
+    private final String alphanumericString = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
     private Random random;
     private RestTemplate restTemplate;
     @Value("${sms.endpoint}")
@@ -41,13 +41,15 @@ public class SMSService {
         restTemplate.setMessageConverters(messageConverters);
     }
 
-    public String generateNumSequence(int num_chars) {
-        char[] otp = new char[OTP_LENGTH];
-        for (int i = 0; i < OTP_LENGTH; i++) {
-            otp[i] =
-                    numbers.charAt(random.nextInt(numbers.length()));
+    public String generateNumSequence(int num_chars, boolean alphanumeric) {
+        String vocab = numericString;
+        if (alphanumeric) vocab = this.alphanumericString;
+        char[] sequence = new char[num_chars];
+        for (int i = 0; i < num_chars; i++) {
+            sequence[i] =
+                    vocab.charAt(random.nextInt(vocab.length()));
         }
-        return new String(otp);
+        return new String(sequence);
     }
 
     public boolean sendOTPSMS(String userName, String to, String otp) {
