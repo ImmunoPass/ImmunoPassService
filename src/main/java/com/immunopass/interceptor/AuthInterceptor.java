@@ -19,12 +19,12 @@ public class AuthInterceptor implements HandlerInterceptor {
         String accessToken = request.getHeader(RequestHeader.ACCESS_TOKEN);
 
         if (accessToken == null) {
-            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "AuthToken missing.");
             return false;
         } else if (authService.isAuthenticated(accessToken) != null) {
             return true;
         } else {
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized request!");
             return false;
         }
     }

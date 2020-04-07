@@ -11,6 +11,6 @@ public class SendOtpResponse {
     private String validTill;
     private String identifier;
     private IdentifierType identifierType;
-    private Integer tryCount;
+    private Integer retryCount;
     private OtpStatus status;
 }
