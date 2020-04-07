@@ -60,7 +60,7 @@ public class OtpService implements OtpController {
 
     private SendOtpResponse generateNewOtp(String identifier, IdentifierType identifierType, String name) {
         OtpEntity otpEntity = OtpEntity.builder()
-                .otp(smsService.generateNumSequence(6, false))
+                .otp(smsService.generateOtp(6))
                 .status(OtpStatus.UNVERIFIED)
                 .retryCount(0)
                 .verificationAttempts(0)
@@ -69,8 +69,12 @@ public class OtpService implements OtpController {
                 .identifierType(identifierType)
                 .build();
         otpEntity = otpRepository.save(otpEntity);
-        smsService.sendOTPSMS(name, identifier, otpEntity.getOtp());
-        return otpToSendOtpResponse(otpEntity);
+        boolean otpSendSuccess = smsService.sendOTPSMS(name, identifier, otpEntity.getOtp());
+        if (otpSendSuccess) {
+            return otpToSendOtpResponse(otpEntity);
+        } else {
+            return null;
+        }
     }
 
     private SendOtpResponse otpToSendOtpResponse(OtpEntity otpEntity) {
