@@ -1,5 +1,6 @@
 package com.immunopass.service;
 
+import com.immunopass.restclient.SMSService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.immunopass.controller.ImmunopassController;
@@ -15,6 +16,9 @@ public class ImmunopassService implements ImmunopassController {
     @Autowired
     private ImmunopassRepository immunopassRepository;
 
+    @Autowired
+    private SMSService smsService;
+
     @Override public Immunopass createImmunopass(final Immunopass immunopass) {
         ImmunopassEntity immunopassEntity =
                 ImmunopassEntity.builder()
@@ -23,10 +27,11 @@ public class ImmunopassService implements ImmunopassController {
                         .userEmpId(immunopass.getUserMobile())
                         .userGovernmentId(immunopass.getUserGovernmentId())
                         .userLocation(immunopass.getUserLocation())
-                        .immunopassCode("RANDOM_CODE") //TODO: Generate a unique random code.
+                        .immunopassCode(smsService.generateNumSequence(8))
                         .immunoTestResult(immunopass.getImmunoTestResult())
                         .build();
         immunopassEntity = immunopassRepository.save(immunopassEntity);
+        smsService.sendImmunoPass(immunopassEntity.getUserMobile(), immunopassEntity.getImmunopassCode(), immunopassEntity.getImmunoTestResult().toString());
         return mapEntityToModel(immunopassEntity);
     }
 

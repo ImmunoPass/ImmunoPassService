@@ -9,6 +9,6 @@ import lombok.*;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class LoginOtpResponse {
+public class SendSMSResponse {
     private String status;
 }

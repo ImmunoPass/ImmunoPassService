@@ -1,9 +1,5 @@
 package com.immunopass.service;
 
-import java.time.LocalDateTime;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestBody;
 import com.immunopass.controller.OtpController;
 import com.immunopass.entity.OtpEntity;
 import com.immunopass.enums.IdentifierType;
@@ -16,6 +12,11 @@ import com.immunopass.model.VerifyOtpResponse;
 import com.immunopass.repository.AccountRepository;
 import com.immunopass.repository.OtpRepository;
 import com.immunopass.restclient.SMSService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestBody;
+
+import java.time.LocalDateTime;
 
 
 @Service
@@ -58,7 +59,7 @@ public class OtpService implements OtpController {
 
     private SendOtpResponse generateNewOtp(String identifier, IdentifierType identifierType, String name) {
         OtpEntity otpEntity = OtpEntity.builder()
-                .otp(smsService.generateOtp())
+                .otp(smsService.generateNumSequence(6))
                 .status(OtpStatus.UNVERIFIED)
                 .tryCount(1)
                 .validTill(LocalDateTime.now().plusMinutes(15))

@@ -1,21 +1,19 @@
 package com.immunopass.restclient;
 
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.*;
+import org.springframework.http.converter.HttpMessageConverter;
+import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
+import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
+
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Random;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.RequestEntity;
-import org.springframework.http.ResponseEntity;
-import org.springframework.http.converter.HttpMessageConverter;
-import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
-import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 
 @Service
@@ -43,7 +41,7 @@ public class SMSService {
         restTemplate.setMessageConverters(messageConverters);
     }
 
-    public String generateOtp() {
+    public String generateNumSequence(int num_chars) {
         char[] otp = new char[OTP_LENGTH];
         for (int i = 0; i < OTP_LENGTH; i++) {
             otp[i] =
@@ -57,21 +55,36 @@ public class SMSService {
                 .otp(otp)
                 .to(to)
                 .userName(userName).build();
-        HttpHeaders requestHeaders = new HttpHeaders();
-        requestHeaders.set("Authentication", auth);
-        requestHeaders.setContentType(MediaType.APPLICATION_JSON);
-        List<MediaType> accepts = new ArrayList<>();
-        accepts.add(MediaType.ALL);
-        requestHeaders.setAccept(accepts);
+        return restExchange(otpRequest, "/v1/sms/login-otp");
+    }
+
+    public boolean sendVoucher(String to, String voucherCode, String userName) {
+        VoucherRequest voucherRequest = VoucherRequest.builder()
+                .userDOB("test")
+                .to(to)
+                .userName(userName)
+                .voucherCode(voucherCode)
+                .userMobileNumber(to).build();
+        return restExchange(voucherRequest, "/v1/sms/send-voucher");
+    }
+
+    public boolean sendImmunoPass(String to, String token, String status) {
+        ImmunoPassRequest passRequest = ImmunoPassRequest.builder()
+                .to(to)
+                .token(token)
+                .userStatus(status).build();
+        return restExchange(passRequest, "/v1/sms/send-pass");
+    }
+
+    private boolean restExchange(Object request, String endpointPath) {
+
+        HttpHeaders requestHeaders = setHTTPHeaders();
         try {
-            RequestEntity<LoginOtpRequest> requestEntity =
-                    new RequestEntity<LoginOtpRequest>(
-                            otpRequest,
-                            requestHeaders,
-                            HttpMethod.POST,
-                            new URI(endpoint + "/v1/sms/login-otp")
+            RequestEntity requestEntity =
+                    new RequestEntity(request,requestHeaders,HttpMethod.POST,
+                            new URI(endpoint + endpointPath)
                     );
-            ResponseEntity<LoginOtpResponse> otpResponse = restTemplate.exchange(requestEntity, LoginOtpResponse.class);
+            ResponseEntity<SendSMSResponse> otpResponse = restTemplate.exchange(requestEntity, SendSMSResponse.class);
 
             if (otpResponse.getStatusCode() == HttpStatus.OK) {
                 return true;
@@ -81,7 +94,14 @@ public class SMSService {
             return false;
         }
         return false;
+    }
 
+    private HttpHeaders setHTTPHeaders() {
+        HttpHeaders requestHeaders = new HttpHeaders();
+        requestHeaders.set("Authentication", auth);
+        requestHeaders.setContentType(MediaType.APPLICATION_JSON);
+        requestHeaders.setAccept(Stream.of(MediaType.ALL).collect(Collectors.toList()));
+        return requestHeaders;
     }
 
 }
