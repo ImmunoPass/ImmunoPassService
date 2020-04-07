@@ -1,5 +1,5 @@
 package com.immunopass.enums;
 
 public enum OtpStatus {
-    VERIFIED, UNVERIFIED
+    VERIFIED, UNVERIFIED, INVALID
 }

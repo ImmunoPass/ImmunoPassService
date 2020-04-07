@@ -1,5 +1,6 @@
 package com.immunopass.model;
 
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import com.immunopass.enums.EntityStatus;
 import com.immunopass.enums.OrganizationType;
@@ -12,7 +13,7 @@ import lombok.Getter;
 @NotNull
 public class Organization {
     private final Long id;
-    @NotNull
+    @NotBlank
     private final String name;
     @NotNull
     private final OrganizationType type;

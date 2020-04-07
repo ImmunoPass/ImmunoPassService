@@ -1,5 +1,6 @@
 package com.immunopass.model;
 
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import lombok.Builder;
 import lombok.Getter;
@@ -8,8 +9,8 @@ import lombok.Getter;
 @Builder
 @NotNull
 public class VerifyOtpRequest {
-    @NotNull
+    @NotBlank
     private String otp;
-    @NotNull
+    @NotBlank
     private String identifier;
 }

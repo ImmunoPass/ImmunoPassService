@@ -1,5 +1,6 @@
 package com.immunopass.model;
 
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import com.immunopass.enums.VoucherStatus;
 import lombok.Builder;
@@ -14,9 +15,9 @@ public class Voucher {
     private final String voucherCode;
     @NotNull
     private final Long issuerId;
-    @NotNull
+    @NotBlank
     private final String userName;
-    @NotNull
+    @NotBlank
     private final String userMobile;
     private final String userEmpId;
     private final String userGovernmentId;
