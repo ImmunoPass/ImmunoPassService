@@ -1,5 +1,6 @@
 package com.immunopass.model;
 
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import com.immunopass.enums.ImmunoTestResult;
 import lombok.Builder;
@@ -11,9 +12,9 @@ import lombok.Getter;
 @NotNull
 public class Immunopass {
     private final Long id;
-    @NotNull
+    @NotBlank
     private final String userName;
-    @NotNull
+    @NotBlank
     private final String userMobile;
     private final String userEmpId;
     private final String userGovernmentId;

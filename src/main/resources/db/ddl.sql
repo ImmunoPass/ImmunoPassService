@@ -156,18 +156,20 @@ ALTER TABLE immunopass.organization OWNER TO elemential;
 -- Name: otp; Type: TABLE; Schema: immunopass; Owner: elemential
 --
 
-CREATE TABLE immunopass.otp (
-    id bigint NOT NULL,
-    identifier character varying(255),
-    identifier_type character varying(255) NOT NULL,
-    otp character varying(255) NOT NULL,
-    status character varying(255) NOT NULL,
-    try_count integer NOT NULL,
-    valid_till timestamp with time zone DEFAULT (CURRENT_TIMESTAMP + '01:00:00'::interval) NOT NULL,
-    created_at timestamp with time zone DEFAULT CURRENT_TIMESTAMP NOT NULL,
-    updated_at timestamp with time zone DEFAULT CURRENT_TIMESTAMP NOT NULL
-);
-
+CREATE TABLE immunopass.otp
+(
+    id bigint NOT NULL DEFAULT nextval('immunopass.otp_id_seq'::regclass),
+    identifier character varying(255) COLLATE pg_catalog."default",
+    identifier_type character varying(255) COLLATE pg_catalog."default" NOT NULL,
+    otp character varying(255) COLLATE pg_catalog."default" NOT NULL,
+    status character varying(255) COLLATE pg_catalog."default" NOT NULL,
+    retry_count integer NOT NULL,
+    verification_attempts integer NOT NULL DEFAULT 0,
+    valid_till timestamp with time zone NOT NULL DEFAULT (CURRENT_TIMESTAMP + '01:00:00'::interval),
+    created_at timestamp with time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at timestamp with time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT otp_pkey PRIMARY KEY (id)
+)
 
 ALTER TABLE immunopass.otp OWNER TO elemential;
 

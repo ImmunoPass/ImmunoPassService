@@ -1,13 +1,23 @@
 package com.immunopass.entity;
 
-import com.immunopass.enums.IdentifierType;
-import com.immunopass.enums.OtpStatus;
-import lombok.*;
+import java.time.LocalDateTime;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
-
-import javax.persistence.*;
-import java.time.LocalDateTime;
+import com.immunopass.enums.IdentifierType;
+import com.immunopass.enums.OtpStatus;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 
 @Entity
@@ -26,7 +36,9 @@ public class OtpEntity {
 
     private String otp;
 
-    private Integer tryCount;
+    private Integer retryCount;
+
+    private Integer verificationAttempts;
 
     private String identifier;
 

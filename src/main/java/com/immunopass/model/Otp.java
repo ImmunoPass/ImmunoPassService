@@ -15,6 +15,7 @@ public class Otp {
     private final String otp;
     private final String identifier;
     private final IdentifierType identifierType;
-    private final Integer tryCount;
+    private final Integer retryCount;
+    private final Integer verificationAttempts;
     private final OtpStatus status;
 }

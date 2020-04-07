@@ -12,6 +12,4 @@ public interface OtpRepository extends JpaRepository<OtpEntity, Long> {
 
     Optional<OtpEntity> findFirstByIdentifierOrderByCreatedAtDesc(String identifier);
 
-    Optional<OtpEntity> findFirstByIdentifierAndOtpOrderByCreatedAtDesc(String identifier, String otp);
-
 }

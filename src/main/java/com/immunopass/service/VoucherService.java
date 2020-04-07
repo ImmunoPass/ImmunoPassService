@@ -1,6 +1,5 @@
 package com.immunopass.service;
 
-import com.immunopass.restclient.SMSService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.immunopass.controller.VoucherController;
@@ -8,6 +7,7 @@ import com.immunopass.entity.VoucherEntity;
 import com.immunopass.enums.VoucherStatus;
 import com.immunopass.model.Voucher;
 import com.immunopass.repository.VoucherRepository;
+import com.immunopass.restclient.SMSService;
 
 
 @Service
@@ -21,9 +21,9 @@ public class VoucherService implements VoucherController {
 
     @Override public Voucher createVoucher(final Voucher voucher) {
         String code = null;
-        while (checkCodeForUniqueness(code) ==false) {
-            code = smsService.generateNumSequence(8,true);
-        };
+        while (checkCodeForUniqueness(code) == false) {
+            code = smsService.generateUniqueCode(8);
+        }
         VoucherEntity voucherEntity =
                 VoucherEntity.builder()
                         .voucherCode(code)
@@ -37,7 +37,8 @@ public class VoucherService implements VoucherController {
                         .orderId(voucher.getOrderId())
                         .build();
         voucherEntity = voucherRepository.save(voucherEntity);
-        smsService.sendVoucher(voucherEntity.getUserMobile(), voucherEntity.getVoucherCode(), voucherEntity.getUserName());
+        smsService.sendVoucher(voucherEntity.getUserMobile(), voucherEntity.getVoucherCode(),
+                voucherEntity.getUserName());
         return mapEntityToModel(voucherEntity);
     }
 
@@ -70,7 +71,9 @@ public class VoucherService implements VoucherController {
     }
 
     private boolean checkCodeForUniqueness(String code) {
-        if (code == null || voucherRepository.findByVoucherCode(code).isPresent()) return false;
+        if (code == null || voucherRepository.findByVoucherCode(code).isPresent()) {
+            return false;
+        }
         return true;
     }
 

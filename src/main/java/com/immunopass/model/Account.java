@@ -1,5 +1,6 @@
 package com.immunopass.model;
 
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import com.immunopass.enums.EntityStatus;
 import com.immunopass.enums.IdentifierType;
@@ -15,10 +16,10 @@ public class Account {
 
     private final Long id;
 
-    @NotNull
+    @NotBlank
     private final String name;
 
-    @NotNull
+    @NotBlank
     private final String identifier;
 
     @NotNull
