@@ -8,6 +8,7 @@ import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 import org.springframework.stereotype.Component;
+import com.immunopass.entity.AccountEntity;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -60,10 +61,10 @@ public class JwtToken {
         return false;
     }
 
-    public String generateToken(UserDetails userDetails) {
+    public String generateToken(AccountEntity accountEntity) {
         // TODO serialize userDetails to claim map
         Map<String, Object> claims = new HashMap<>();
-        return doGenerateToken(claims, userDetails.getAccountId().toString());
+        return doGenerateToken(claims, accountEntity.getId().toString());
     }
 
     private String doGenerateToken(Map<String, Object> claims, String subject) {

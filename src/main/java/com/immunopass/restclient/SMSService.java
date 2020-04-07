@@ -1,16 +1,22 @@
 package com.immunopass.restclient;
 
-import org.springframework.http.*;
-import org.springframework.http.converter.HttpMessageConverter;
-import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
-import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
-
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Random;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.RequestEntity;
+import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageConverter;
+import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
+import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
+
 
 @Service
 public class SMSService {
@@ -18,14 +24,16 @@ public class SMSService {
     private final String numbers = "0123456789";
     private Random random;
     private RestTemplate restTemplate;
-    private final String endpoint = "${sms.endpoint}";
-    private final String auth = "${sms.auth}";
+    @Value("${sms.endpoint}")
+    private String endpoint;
+    @Value("${sms.auth}")
+    private String auth;
 
     public SMSService() {
         random = new Random();
-        RestTemplate restTemplate = new RestTemplate();
+        restTemplate = new RestTemplate();
 
-        List<HttpMessageConverter<?>> messageConverters = new ArrayList<HttpMessageConverter<?>>();
+        List<HttpMessageConverter<?>> messageConverters = new ArrayList<>();
         //Add the Jackson Message converter
         MappingJackson2HttpMessageConverter converter = new MappingJackson2HttpMessageConverter();
         // Note: here we are making this converter to process any kind of response,
@@ -61,10 +69,9 @@ public class SMSService {
                             otpRequest,
                             requestHeaders,
                             HttpMethod.POST,
-                            new URI( endpoint+"/v1/sms/login-otp")
+                            new URI(endpoint + "/v1/sms/login-otp")
                     );
-            ResponseEntity<LoginOtpResponse> otpResponse = restTemplate.exchange(
-                    requestEntity, LoginOtpResponse.class);
+            ResponseEntity<LoginOtpResponse> otpResponse = restTemplate.exchange(requestEntity, LoginOtpResponse.class);
 
             if (otpResponse.getStatusCode() == HttpStatus.OK) {
                 return true;
@@ -76,6 +83,5 @@ public class SMSService {
         return false;
 
     }
-
 
 }

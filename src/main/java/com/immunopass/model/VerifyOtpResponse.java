@@ -1,4 +1,4 @@
-package com.immunopass.controller.response;
+package com.immunopass.model;
 
 import lombok.Builder;
 import lombok.Getter;

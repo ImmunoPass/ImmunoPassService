@@ -1,4 +1,4 @@
-package com.immunopass;
+package com.immunopass.configuration;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -9,7 +9,7 @@ import com.immunopass.interceptor.AuthInterceptor;
 
 
 @Configuration
-public class WebApp implements WebMvcConfigurer {
+public class AuthenticationConfig implements WebMvcConfigurer {
 
     @Bean
     public AuthInterceptor getAuthInterceptor() {
@@ -18,10 +18,10 @@ public class WebApp implements WebMvcConfigurer {
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(getAuthInterceptor()).
-                addPathPatterns("/**").
-                excludePathPatterns("/v1/otps/**").
-                pathMatcher(new AntPathMatcher());
+        registry.addInterceptor(getAuthInterceptor())
+                .addPathPatterns("/**")
+                .excludePathPatterns("/v1/send_otp")
+                .excludePathPatterns("/v1/verify_otp")
+                .pathMatcher(new AntPathMatcher());
     }
 }
-
