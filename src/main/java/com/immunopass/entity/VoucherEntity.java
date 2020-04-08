@@ -1,13 +1,10 @@
 package com.immunopass.entity;
 
 import java.time.LocalDateTime;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
+
+import com.immunopass.enums.IDType;
+import com.immunopass.enums.VoucherType;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 import com.immunopass.enums.VoucherStatus;
@@ -43,6 +40,9 @@ public class VoucherEntity {
 
     private String userGovernmentId;
 
+    @Enumerated(value = EnumType.STRING)
+    private IDType userGovtIdType;
+
     private String userLocation;
 
     @Enumerated(value = EnumType.STRING)
@@ -51,6 +51,10 @@ public class VoucherEntity {
     private Long orderId;
 
     private Long immunopassId;
+
+    private Long retryCount;
+
+    private String lastFailureReason;
 
     @CreationTimestamp
     private LocalDateTime createdAt;

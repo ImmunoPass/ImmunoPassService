@@ -1,13 +1,17 @@
 package com.immunopass.service;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 import com.immunopass.controller.VoucherController;
 import com.immunopass.entity.VoucherEntity;
 import com.immunopass.enums.VoucherStatus;
 import com.immunopass.model.Voucher;
 import com.immunopass.repository.VoucherRepository;
-import com.immunopass.restclient.SMSService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import javax.validation.Valid;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 
 @Service
@@ -16,43 +20,43 @@ public class VoucherService implements VoucherController {
     @Autowired
     private VoucherRepository voucherRepository;
 
-    @Autowired
-    private SMSService smsService;
-
-    @Override public Voucher createVoucher(final Voucher voucher) {
-        String code = null;
-        while (checkCodeForUniqueness(code) == false) {
-            code = smsService.generateUniqueCode(8);
-        }
+    Voucher createVoucher(final Voucher voucher) {
         VoucherEntity voucherEntity =
                 VoucherEntity.builder()
-                        .voucherCode(code)
+                        .voucherCode(voucher.getVoucherCode())
                         .issuerId(voucher.getIssuerId())
                         .userName(voucher.getUserName())
                         .userMobile(voucher.getUserMobile())
                         .userEmpId(voucher.getUserEmpId())
                         .userGovernmentId(voucher.getUserGovernmentId())
                         .userLocation(voucher.getUserLocation())
-                        .status(VoucherStatus.ALLOTTED)
+                        .status(voucher.getStatus())
                         .orderId(voucher.getOrderId())
+                        .userGovtIdType(voucher.getUserGovtIDType())
                         .build();
         voucherEntity = voucherRepository.save(voucherEntity);
-        smsService.sendVoucher(voucherEntity.getUserMobile(), voucherEntity.getVoucherCode(),
-                voucherEntity.getUserName());
         return mapEntityToModel(voucherEntity);
     }
 
-    @Override
-    public Voucher getVoucher(Long id) {
-        return voucherRepository
-                .findById(id)
+
+    List<Voucher> getVouchersByOrderID(Long orderID) {
+        return voucherRepository.getVouchersForOrder(orderID)
+                .stream()
                 .map(this::mapEntityToModel)
-                .orElse(null);
+                .collect(Collectors.toList());
     }
 
-    @Override
-    public void processVoucher(Long id, String action) {
-        System.out.println("Performing action " + action + " on voucher = " + id);
+
+    void updateVoucherStatusForOrder(Long orderID, VoucherStatus voucherStatus) {
+        voucherRepository.updateVoucherStatusForOrder(voucherStatus.name(), orderID);
+    }
+
+    void updateVoucherStatus(Long voucherID, VoucherStatus voucherStatus) {
+        voucherRepository.updateVoucherStatus(voucherStatus.name(), voucherID);
+    }
+
+    void increaseRetryCount(Long voucherID, String reason) {
+        voucherRepository.increaseRetryCount(voucherID, reason);
     }
 
     private Voucher mapEntityToModel(VoucherEntity voucherEntity) {
@@ -64,17 +68,28 @@ public class VoucherService implements VoucherController {
                 .userMobile(voucherEntity.getUserMobile())
                 .userEmpId(voucherEntity.getUserEmpId())
                 .userGovernmentId(voucherEntity.getUserGovernmentId())
+                .userGovtIDType(voucherEntity.getUserGovtIdType())
                 .userLocation(voucherEntity.getUserLocation())
                 .status(voucherEntity.getStatus())
                 .orderId(voucherEntity.getIssuerId())
                 .build();
     }
 
-    private boolean checkCodeForUniqueness(String code) {
-        if (code == null || voucherRepository.findByVoucherCode(code).isPresent()) {
-            return false;
+    @Override
+    public void claimVoucher(@Valid String voucherCode) {
+        VoucherEntity voucher = voucherRepository.findByVoucherCode(voucherCode);
+        if (voucher==null || voucher.getStatus() != VoucherStatus.PROCESSED) {
+            throw new RuntimeException("No available voucher for the code");
         }
-        return true;
+        voucherRepository.updateVoucherStatus(VoucherStatus.REDEEMED.name(), voucher.getId());
     }
 
+    @Override
+    public Voucher getVoucher(@Valid String voucherCode) {
+        VoucherEntity voucher = voucherRepository.findByVoucherCode(voucherCode);
+        if(voucher == null) {
+            throw new RuntimeException("Voucher not found");
+        }
+        return mapEntityToModel(voucher);
+    }
 }

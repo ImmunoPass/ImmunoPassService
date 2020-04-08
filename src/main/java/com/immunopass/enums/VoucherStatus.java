@@ -1,5 +1,5 @@
 package com.immunopass.enums;
 
 public enum VoucherStatus {
-    ALLOTTED, REDEEMED, CERTIFIED
+    CREATED, ALLOTTED, PROCESSED, REDEEMED, CERTIFIED
 }

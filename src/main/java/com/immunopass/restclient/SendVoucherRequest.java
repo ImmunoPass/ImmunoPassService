@@ -5,14 +5,14 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
-@JsonIgnoreProperties(ignoreUnknown=true)
+@JsonIgnoreProperties(ignoreUnknown = true)
 @Getter
 @Setter
 @Builder
-public class VoucherRequest {
+public class SendVoucherRequest {
     private String to;
-    private String userName;
-    private String userDOB;
     private String voucherCode;
+    private String userName;
     private String userMobileNumber;
+    private String userDOB;
 }
