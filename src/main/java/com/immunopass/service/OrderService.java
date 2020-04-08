@@ -18,6 +18,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import static com.immunopass.utils.ParameterCheckUtils.*;
 
@@ -61,6 +62,13 @@ public class OrderService implements OrderController {
                 .createdBy(createdBy)
                 .build()
         );
+    }
+
+    public List<Order> getOrdersHavingStatus(OrderStatus status) {
+        return orderRepository.getOrdersHavingStatus(status.toString())
+                .stream()
+                .map(this::mapEntityToModel)
+                .collect(Collectors.toList());
     }
 
     public void createVouchers(Order order) throws IOException {
