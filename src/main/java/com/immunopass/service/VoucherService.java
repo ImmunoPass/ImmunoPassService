@@ -1,15 +1,16 @@
 package com.immunopass.service;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 import com.immunopass.controller.VoucherController;
 import com.immunopass.entity.VoucherEntity;
 import com.immunopass.enums.VoucherStatus;
 import com.immunopass.model.Voucher;
 import com.immunopass.repository.VoucherRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import javax.validation.Valid;
 import java.util.List;
+import java.util.Optional;
 
 
 @Service
@@ -18,7 +19,7 @@ public class VoucherService implements VoucherController {
     @Autowired
     private VoucherRepository voucherRepository;
 
-    public Voucher createVoucher(final Voucher voucher) {
+    Voucher createVoucher(final Voucher voucher) {
         VoucherEntity voucherEntity =
                 VoucherEntity.builder()
                         .voucherCode(voucher.getVoucherCode())
@@ -36,26 +37,21 @@ public class VoucherService implements VoucherController {
         return mapEntityToModel(voucherEntity);
     }
 
-    @Override
-    public void claim(@Valid Long id) {
-        voucherRepository.updateVoucherStatus(VoucherStatus.REDEEMED, id);
-    }
 
-
-    public List<Voucher> getVouchersByOrderID(Long orderID) {
+    List<Voucher> getVouchersByOrderID(Long orderID) {
         return voucherRepository.getVouchersForOrder(orderID);
     }
 
 
-    public void updateVoucherStatusForOrder(Long orderID, VoucherStatus voucherStatus) {
+    void updateVoucherStatusForOrder(Long orderID, VoucherStatus voucherStatus) {
         voucherRepository.updateVoucherStatusForOrder(voucherStatus, orderID);
     }
 
-    public void updateVoucherStatus(Long voucherID, VoucherStatus voucherStatus) {
+    void updateVoucherStatus(Long voucherID, VoucherStatus voucherStatus) {
         voucherRepository.updateVoucherStatusForOrder(voucherStatus, voucherID);
     }
 
-    public void increaseRetryCount(Long voucherID, String reason) {
+    void increaseRetryCount(Long voucherID, String reason) {
         voucherRepository.increaseRetryCount(voucherID, reason);
     }
 
@@ -73,5 +69,25 @@ public class VoucherService implements VoucherController {
                 .status(voucherEntity.getStatus())
                 .orderId(voucherEntity.getIssuerId())
                 .build();
+    }
+
+    @Override
+    public void claimVoucher(@Valid String voucherCode) {
+        Optional<VoucherEntity> voucher = voucherRepository.findByVoucherCode(voucherCode);
+        if (!voucher.isPresent()) {
+            throw new RuntimeException("No voucher for the code");
+        }
+        voucherRepository.updateVoucherStatus(VoucherStatus.REDEEMED, voucher.get().getId());
+    }
+
+    @Override
+    public Voucher getVoucher(@Valid String voucherCode) {
+
+        Optional<VoucherEntity> voucher = voucherRepository.findByVoucherCode(voucherCode);
+        if (!voucher.isPresent()) {
+            throw new RuntimeException("No voucher for the code");
+        }
+
+        return mapEntityToModel(voucher.get());
     }
 }

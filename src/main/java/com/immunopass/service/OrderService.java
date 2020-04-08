@@ -55,7 +55,7 @@ public class OrderService implements OrderController {
         URL s3URL = s3Utill.uploadDocumentSync(file.getInputStream(), "text/csv", null, orderUUID + "_order_file.csv");
         orderRepository.save(OrderEntity.builder()
                 .status(OrderStatus.CREATED)
-                .uuid(orderUUID)
+                .uploadedFile(s3URL.toString())
                 .voucherCount(lines.size())
                 .uploadedFile(s3URL.toString())
                 .createdBy(createdBy)
@@ -64,8 +64,7 @@ public class OrderService implements OrderController {
     }
 
     public void createVouchers(Order order) throws IOException {
-        List<String> lines = s3Utill.getFileLinesWithoutHeader(order.getUuid() + "_order_file.csv");
-        String orderUUID = UUID.randomUUID().toString();
+        List<String> lines = s3Utill.getFileLinesWithoutHeader(order.getUploadedFile());
 
         for (String line : lines) {
             // name, mobileNumber, idType, govtIDNumber, empID
@@ -117,7 +116,7 @@ public class OrderService implements OrderController {
     }
 
     @Override
-    public void createOrder(MultipartFile file, String accessToken) {
+    public void createOrder(MultipartFile file) {
         try {
             uploadOrder(file, 1L); // fixme: get accountID from accessToken
         } catch (IOException e) {
@@ -126,7 +125,7 @@ public class OrderService implements OrderController {
     }
 
     @Override
-    public void createVouchers(Long id, String accessToken) {
+    public void createVouchers(Long id) {
         // fixme: get accountID from accessToken
         Order order = orderRepository.getOrder(id);
         try {
@@ -137,7 +136,7 @@ public class OrderService implements OrderController {
     }
 
     @Override
-    public void processOrders(Long id, String accessToken) {
+    public void processOrders(Long id) {
         // fixme: get accountID from accessToken
         Order order = orderRepository.getOrder(id);
         try {

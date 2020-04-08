@@ -15,6 +15,5 @@ public class Order {
     private final String uploadedFile;
     private final OrderStatus status;
     private final Long createdBy;
-    private final String uuid;
     private LocalDateTime createdAt;
 }
