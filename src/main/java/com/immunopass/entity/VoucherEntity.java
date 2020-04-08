@@ -41,7 +41,7 @@ public class VoucherEntity {
     private String userGovernmentId;
 
     @Enumerated(value = EnumType.STRING)
-    private IDType userGovtIDType;
+    private IDType userGovtIdType;
 
     private String userLocation;
 

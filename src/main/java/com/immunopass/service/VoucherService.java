@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import javax.validation.Valid;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 
 @Service
@@ -31,7 +32,7 @@ public class VoucherService implements VoucherController {
                         .userLocation(voucher.getUserLocation())
                         .status(voucher.getStatus())
                         .orderId(voucher.getOrderId())
-                        .userGovtIDType(voucher.getUserGovtIDType())
+                        .userGovtIdType(voucher.getUserGovtIDType())
                         .build();
         voucherEntity = voucherRepository.save(voucherEntity);
         return mapEntityToModel(voucherEntity);
@@ -39,16 +40,19 @@ public class VoucherService implements VoucherController {
 
 
     List<Voucher> getVouchersByOrderID(Long orderID) {
-        return voucherRepository.getVouchersForOrder(orderID);
+        return voucherRepository.getVouchersForOrder(orderID)
+                .stream()
+                .map(this::mapEntityToModel)
+                .collect(Collectors.toList());
     }
 
 
     void updateVoucherStatusForOrder(Long orderID, VoucherStatus voucherStatus) {
-        voucherRepository.updateVoucherStatusForOrder(voucherStatus, orderID);
+        voucherRepository.updateVoucherStatusForOrder(voucherStatus.name(), orderID);
     }
 
     void updateVoucherStatus(Long voucherID, VoucherStatus voucherStatus) {
-        voucherRepository.updateVoucherStatusForOrder(voucherStatus, voucherID);
+        voucherRepository.updateVoucherStatus(voucherStatus.name(), voucherID);
     }
 
     void increaseRetryCount(Long voucherID, String reason) {
@@ -64,7 +68,7 @@ public class VoucherService implements VoucherController {
                 .userMobile(voucherEntity.getUserMobile())
                 .userEmpId(voucherEntity.getUserEmpId())
                 .userGovernmentId(voucherEntity.getUserGovernmentId())
-                .userGovtIDType(voucherEntity.getUserGovtIDType())
+                .userGovtIDType(voucherEntity.getUserGovtIdType())
                 .userLocation(voucherEntity.getUserLocation())
                 .status(voucherEntity.getStatus())
                 .orderId(voucherEntity.getIssuerId())
@@ -73,21 +77,19 @@ public class VoucherService implements VoucherController {
 
     @Override
     public void claimVoucher(@Valid String voucherCode) {
-        Optional<VoucherEntity> voucher = voucherRepository.findByVoucherCode(voucherCode);
-        if (!voucher.isPresent() || voucher.get().getStatus() != VoucherStatus.ALLOTTED) {
+        VoucherEntity voucher = voucherRepository.findByVoucherCode(voucherCode);
+        if (voucher==null || voucher.getStatus() != VoucherStatus.PROCESSED) {
             throw new RuntimeException("No available voucher for the code");
         }
-        voucherRepository.updateVoucherStatus(VoucherStatus.REDEEMED, voucher.get().getId());
+        voucherRepository.updateVoucherStatus(VoucherStatus.REDEEMED.name(), voucher.getId());
     }
 
     @Override
     public Voucher getVoucher(@Valid String voucherCode) {
-
-        Optional<VoucherEntity> voucher = voucherRepository.findByVoucherCode(voucherCode);
-        if (!voucher.isPresent()) {
-            throw new RuntimeException("No voucher for the code");
+        VoucherEntity voucher = voucherRepository.findByVoucherCode(voucherCode);
+        if(voucher == null) {
+            throw new RuntimeException("Voucher not found");
         }
-
-        return mapEntityToModel(voucher.get());
+        return mapEntityToModel(voucher);
     }
 }

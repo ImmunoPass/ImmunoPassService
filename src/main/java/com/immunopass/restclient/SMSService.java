@@ -69,16 +69,6 @@ public class SMSService {
         return restExchange(otpRequest, "/v1/sms/login-otp");
     }
 
-    public boolean sendVoucher(String to, String voucherCode, String userName) {
-        VoucherRequest voucherRequest = VoucherRequest.builder()
-                .userDOB("test")
-                .to(to)
-                .userName(userName)
-                .voucherCode(voucherCode)
-                .userMobileNumber(to).build();
-        return restExchange(voucherRequest, "/v1/sms/send-voucher");
-    }
-
     public boolean sendImmunoPass(String to, String token, String status) {
         ImmunoPassRequest passRequest = ImmunoPassRequest.builder()
                 .to(to)
@@ -123,33 +113,9 @@ public class SMSService {
                 .userMobileNumber(voucher.getUserMobile())
                 .userName(voucher.getUserName())
                 .voucherCode(voucher.getVoucherCode())
+                .userDOB("xx/yy/zzzz") // todo: make DOB optional.
                 .build();
-        HttpHeaders requestHeaders = new HttpHeaders();
-        requestHeaders.set("Authentication", auth);
-        requestHeaders.setContentType(MediaType.APPLICATION_JSON);
-        List<MediaType> accepts = new ArrayList<>();
-        accepts.add(MediaType.ALL);
-        requestHeaders.setAccept(accepts);
-        try {
-            RequestEntity<SendVoucherRequest> requestEntity =
-                    new RequestEntity<>(
-                            request,
-                            requestHeaders,
-                            HttpMethod.POST,
-                            new URI(endpoint + "/v1/sms/send-voucher")
-                    );
-            ResponseEntity<SendVoucherResponse> response = restTemplate.exchange(
-                    requestEntity, SendVoucherResponse.class);
-
-            if (response.getStatusCode() == HttpStatus.OK && response.getBody().getStatus().equals("OK")) {
-                return true;
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            return false;
-        }
-        return false;
-
+        return restExchange(request, "/v1/sms/send-voucher");
     }
 
 }

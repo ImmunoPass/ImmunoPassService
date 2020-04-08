@@ -14,4 +14,5 @@ public class SendVoucherRequest {
     private String voucherCode;
     private String userName;
     private String userMobileNumber;
+    private String userDOB;
 }

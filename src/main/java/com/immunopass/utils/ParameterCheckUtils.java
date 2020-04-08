@@ -25,7 +25,7 @@ public class ParameterCheckUtils {
         if (number.length() >= 10) {
             number = "+91" + number.substring(number.length() - 10);
         } else {
-            throw new RuntimeException("incorrect mobile number");
+            throw new RuntimeException("incorrect mobile number " + number);
         }
         return number;
     }

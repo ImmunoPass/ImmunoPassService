@@ -84,6 +84,8 @@ public class S3Util {
     }
 
     public List<String> getFileLinesWithoutHeader(String key) throws IOException {
+        String[] keyParts = key.split("/");
+        key = keyParts[keyParts.length-1];
         InputStream orderFileStream = getFileStream(key).toCompletableFuture().join();
         BufferedReader br = new BufferedReader(new InputStreamReader(orderFileStream));
         String line;
@@ -91,7 +93,7 @@ public class S3Util {
         while ((line = br.readLine()) != null) {
             lines.add(line);
         }
-        return lines;
+        return lines.subList(1, lines.size());
     }
 
     public CompletionStage<InputStream> getFileStream(String bucket, String key) {

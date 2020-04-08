@@ -11,7 +11,7 @@ import javax.validation.Valid;
 public interface VoucherController {
 
     @PostMapping("/claimVoucher")
-    void claimVoucher(@Valid @RequestBody final String voucherCode);
+    void claimVoucher(@Valid @RequestParam final String voucherCode);
 
     @GetMapping("/getVoucher")
     Voucher getVoucher(@Valid @RequestParam final String voucherCode);

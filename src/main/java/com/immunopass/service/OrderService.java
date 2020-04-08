@@ -43,7 +43,7 @@ public class OrderService implements OrderController {
         String orderUUID = UUID.randomUUID().toString();
 
         // validate lines
-        for (String line : lines) {
+        for (String line : lines.subList(1, lines.size())) {
             // name, mobileNumber, idType, idNumber
             String[] cols = line.split(",");
             checkLength(checkEmptyOrNull(cleanName(cols[0])), 40);
@@ -89,7 +89,7 @@ public class OrderService implements OrderController {
         }
         voucherService.updateVoucherStatusForOrder(order.getId(), VoucherStatus.ALLOTTED);
 
-        orderRepository.updateOrderStatus(OrderStatus.PROCESSING, order.getId());
+        orderRepository.updateOrderStatus(OrderStatus.PROCESSING.name(), order.getId());
     }
 
     public void processOrder(Order order) throws IOException {
@@ -111,7 +111,7 @@ public class OrderService implements OrderController {
             }
         }
         if (!failure) {
-            orderRepository.updateOrderStatus(OrderStatus.PROCESSED, order.getId());
+            orderRepository.updateOrderStatus(OrderStatus.PROCESSED.name(), order.getId());
         }
     }
 
@@ -128,7 +128,7 @@ public class OrderService implements OrderController {
     @Override
     public void createOrder(MultipartFile file) {
         try {
-            uploadOrder(file, 1L); // fixme: get accountID from accessToken
+            uploadOrder(file, 4L); // fixme: get accountID from accessToken
         } catch (IOException e) {
             throw new RuntimeException("Error in uploading file " + e.getLocalizedMessage());
         }
@@ -146,7 +146,7 @@ public class OrderService implements OrderController {
     }
 
     @Override
-    public void processOrders(Long id) {
+    public void processOrder(Long id) {
         // fixme: get accountID from accessToken
         OrderEntity order = orderRepository.getOrder(id);
         try {

@@ -18,6 +18,6 @@ public interface OrderController {
     public void createVouchers(@RequestParam("id") Long id);
 
     //todo: Remove after writing cron for processing orders.
-    @PostMapping("/processOrders")
-    public void processOrders(@RequestParam("id") Long id);
+    @PostMapping("/processOrder")
+    public void processOrder(@RequestParam("id") Long id);
 }
