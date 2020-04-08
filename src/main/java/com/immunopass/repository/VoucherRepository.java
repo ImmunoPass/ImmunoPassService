@@ -13,19 +13,19 @@ import java.util.Optional;
 
 public interface VoucherRepository extends JpaRepository<VoucherEntity, Long> {
     @Modifying
-    @Query("update voucher set status = :status where order_id = :orderID")
+    @Query(value = "update voucher set status = :status where order_id = :orderID", nativeQuery = true)
     void updateVoucherStatusForOrder(VoucherStatus status, Long orderID);
 
-    @Query("SELECT * FROM voucher WHERE order_id = :orderID")
+    @Query(value = "SELECT * FROM voucher WHERE order_id = :orderID", nativeQuery = true)
     List<Voucher> getVouchersForOrder(Long orderID);
 
 
     @Modifying
-    @Query("update voucher set status = :status where id = :voucherID")
+    @Query(value = "update voucher set status = :status where id = :voucherID", nativeQuery = true)
     void updateVoucherStatus(VoucherStatus status, Long voucherID);
 
     @Modifying
-    @Query("update voucher set retry_count = retry_count+1, last_failure_reason=:lastFailureReason where id = :voucherID")
+    @Query(value = "update voucher set retry_count = retry_count+1, last_failure_reason=:lastFailureReason where id = :voucherID", nativeQuery = true)
     void increaseRetryCount(Long voucherID, String lastFailureReason);
 
     Optional<VoucherEntity> findByVoucherCode(String voucherCode);

@@ -115,6 +115,16 @@ public class OrderService implements OrderController {
         }
     }
 
+    public Order mapEntityToModel(OrderEntity entity) {
+        return Order.builder()
+                .uploadedFile(entity.getUploadedFile())
+                .status(entity.getStatus())
+                .voucherCount(entity.getVoucherCount())
+                .createdBy(entity.getCreatedBy())
+                .id(entity.getId())
+                .build();
+    }
+
     @Override
     public void createOrder(MultipartFile file) {
         try {
@@ -127,9 +137,9 @@ public class OrderService implements OrderController {
     @Override
     public void createVouchers(Long id) {
         // fixme: get accountID from accessToken
-        Order order = orderRepository.getOrder(id);
+        OrderEntity order = orderRepository.getOrder(id);
         try {
-            createVouchers(order);
+            createVouchers(mapEntityToModel(order));
         } catch (IOException e) {
             throw new RuntimeException("Error in creating vouchers " + e.getLocalizedMessage());
         }
@@ -138,9 +148,9 @@ public class OrderService implements OrderController {
     @Override
     public void processOrders(Long id) {
         // fixme: get accountID from accessToken
-        Order order = orderRepository.getOrder(id);
+        OrderEntity order = orderRepository.getOrder(id);
         try {
-            processOrder(order);
+            processOrder(mapEntityToModel(order));
         } catch (IOException e) {
             throw new RuntimeException("Error in processing vouchers " + e.getLocalizedMessage());
         }
