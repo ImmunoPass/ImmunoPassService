@@ -74,8 +74,8 @@ public class VoucherService implements VoucherController {
     @Override
     public void claimVoucher(@Valid String voucherCode) {
         Optional<VoucherEntity> voucher = voucherRepository.findByVoucherCode(voucherCode);
-        if (!voucher.isPresent()) {
-            throw new RuntimeException("No voucher for the code");
+        if (!voucher.isPresent() || voucher.get().getStatus() != VoucherStatus.ALLOTTED) {
+            throw new RuntimeException("No available voucher for the code");
         }
         voucherRepository.updateVoucherStatus(VoucherStatus.REDEEMED, voucher.get().getId());
     }
