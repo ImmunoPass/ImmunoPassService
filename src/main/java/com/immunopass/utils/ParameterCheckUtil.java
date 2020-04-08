@@ -1,6 +1,10 @@
 package com.immunopass.utils;
 
-public class ParameterCheckUtils {
+import lombok.experimental.UtilityClass;
+
+
+@UtilityClass
+public class ParameterCheckUtil {
     public static String checkEmptyOrNull(String value) {
         if (value == null && value.isEmpty()) {
             throw new RuntimeException("value is null or empty");

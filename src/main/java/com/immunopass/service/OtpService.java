@@ -10,7 +10,7 @@ import com.immunopass.controller.OtpController;
 import com.immunopass.entity.OtpEntity;
 import com.immunopass.enums.IdentifierType;
 import com.immunopass.enums.OtpStatus;
-import com.immunopass.jwt.JwtToken;
+import com.immunopass.utils.JwtUtil;
 import com.immunopass.model.SendOtpRequest;
 import com.immunopass.model.SendOtpResponse;
 import com.immunopass.model.VerifyOtpRequest;
@@ -28,7 +28,7 @@ public class OtpService implements OtpController {
     @Autowired
     private OtpRepository otpRepository;
     @Autowired
-    private JwtToken jwtToken;
+    private JwtUtil jwtUtil;
     @Autowired
     private SMSService smsService;
 
@@ -124,7 +124,7 @@ public class OtpService implements OtpController {
                 .map(accountEntity ->
                         VerifyOtpResponse
                                 .builder()
-                                .accessToken(jwtToken.generateToken(accountEntity))
+                                .accessToken(jwtUtil.generateToken(accountEntity))
                                 .build())
                 .orElse(null);
     }
