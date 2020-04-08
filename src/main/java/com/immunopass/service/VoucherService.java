@@ -78,7 +78,6 @@ public class VoucherService implements VoucherController {
     @Override
     public void claimVoucher(@Valid VoucherRequest voucherRequest) {
         String voucherCode = voucherRequest.getVoucherCode();
-        System.out.println("Here's yoru voucher code " + voucherCode);
         VoucherEntity voucher = voucherRepository.findByVoucherCode(voucherCode);
         if (voucher==null || voucher.getStatus() != VoucherStatus.PROCESSED) {
             throw new RuntimeException("No available voucher for the code");
@@ -89,7 +88,6 @@ public class VoucherService implements VoucherController {
     @Override
     public Voucher getVoucher(@Valid VoucherRequest voucherRequest) {
         String voucherCode = voucherRequest.getVoucherCode();
-        System.out.println("Here's yoru voucher code " + voucherCode);
         VoucherEntity voucher = voucherRepository.findByVoucherCode(voucherCode);
         if(voucher == null) {
             throw new RuntimeException("Voucher not found");

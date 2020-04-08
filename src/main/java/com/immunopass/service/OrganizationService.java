@@ -41,8 +41,7 @@ public class OrganizationService implements OrganizationController {
     }
 
     @Override
-    public List<Organization> getOrganizations(Long accountId) {
-        System.out.println("Account is : " + accountId);
+    public List<Organization> getOrganizations() {
         return organizationRepository
                 .findAll()
                 .stream()

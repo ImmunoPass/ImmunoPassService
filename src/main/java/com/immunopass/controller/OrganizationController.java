@@ -16,7 +16,7 @@ public interface OrganizationController {
     Organization getOrganization(@NotNull @PathVariable final Long id);
 
     @GetMapping
-    List<Organization> getOrganizations(Long accountId);
+    List<Organization> getOrganizations();
 
     @PostMapping("")
     Organization createOrganization(@Valid @RequestBody final Organization organization);
