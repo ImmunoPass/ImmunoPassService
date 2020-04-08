@@ -1,15 +1,11 @@
 package com.immunopass.controller;
 
-import java.util.List;
+import com.immunopass.model.Organization;
+import org.springframework.web.bind.annotation.*;
+
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-import com.immunopass.model.Organization;
+import java.util.List;
 
 
 @RestController

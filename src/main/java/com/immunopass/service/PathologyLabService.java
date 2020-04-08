@@ -15,7 +15,8 @@ public class PathologyLabService implements PathologyLabController {
     @Autowired
     private PathologyLabRepository pathologyLabRepository;
 
-    @Override public PathologyLab createPathologyLab(final PathologyLab pathologyLab) {
+    @Override
+    public PathologyLab createPathologyLab(final PathologyLab pathologyLab) {
         PathologyLabEntity pathologyLabEntity =
                 PathologyLabEntity.builder()
                         .name(pathologyLab.getName())

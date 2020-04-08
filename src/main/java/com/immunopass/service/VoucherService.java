@@ -4,13 +4,13 @@ import com.immunopass.controller.VoucherController;
 import com.immunopass.entity.VoucherEntity;
 import com.immunopass.enums.VoucherStatus;
 import com.immunopass.model.Voucher;
+import com.immunopass.model.VoucherRequest;
 import com.immunopass.repository.VoucherRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.validation.Valid;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 
@@ -76,7 +76,8 @@ public class VoucherService implements VoucherController {
     }
 
     @Override
-    public void claimVoucher(@Valid String voucherCode) {
+    public void claimVoucher(@Valid VoucherRequest voucherRequest) {
+        String voucherCode = voucherRequest.getVoucherCode();
         VoucherEntity voucher = voucherRepository.findByVoucherCode(voucherCode);
         if (voucher==null || voucher.getStatus() != VoucherStatus.PROCESSED) {
             throw new RuntimeException("No available voucher for the code");
@@ -85,7 +86,8 @@ public class VoucherService implements VoucherController {
     }
 
     @Override
-    public Voucher getVoucher(@Valid String voucherCode) {
+    public Voucher getVoucher(@Valid VoucherRequest voucherRequest) {
+        String voucherCode = voucherRequest.getVoucherCode();
         VoucherEntity voucher = voucherRepository.findByVoucherCode(voucherCode);
         if(voucher == null) {
             throw new RuntimeException("Voucher not found");

@@ -1,14 +1,15 @@
 package com.immunopass.service;
 
-import java.util.List;
-import java.util.stream.Collectors;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 import com.immunopass.controller.OrganizationController;
 import com.immunopass.entity.OrganizationEntity;
 import com.immunopass.enums.EntityStatus;
 import com.immunopass.model.Organization;
 import com.immunopass.repository.OrganizationRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 
 @Service
