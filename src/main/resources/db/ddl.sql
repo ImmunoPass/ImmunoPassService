@@ -448,3 +448,6 @@ ALTER TABLE ONLY immunopass.voucher
 -- PostgreSQL database dump complete
 --
 
+alter table voucher add column user_govt_id_type text;
+alter table voucher add column retry_count bigint default 0;
+alter table voucher add column last_failure_reason text;
