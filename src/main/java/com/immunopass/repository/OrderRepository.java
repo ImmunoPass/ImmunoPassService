@@ -11,7 +11,7 @@ import org.springframework.data.jpa.repository.Query;
 public interface OrderRepository extends JpaRepository<OrderEntity, Long> {
 
     @Modifying
-    @Query("update voucher set status = :status where order_id = :orderID")
+    @Query("update order set status = :status where order_id = :orderID")
     void updateOrderStatus(OrderStatus status, Long orderID);
 
     @Query("SELECT * FROM order WHERE id = :orderID")
