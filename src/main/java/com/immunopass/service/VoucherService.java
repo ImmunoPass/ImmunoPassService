@@ -94,4 +94,12 @@ public class VoucherService implements VoucherController {
         }
         return mapEntityToModel(voucher);
     }
+
+    @Override
+    public List<Voucher> getVouchers() {
+        return  voucherRepository.findAll()
+                .stream()
+                .map(this::mapEntityToModel)
+                .collect(Collectors.toList());
+    }
 }
