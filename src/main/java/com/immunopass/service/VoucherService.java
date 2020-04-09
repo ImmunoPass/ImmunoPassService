@@ -33,6 +33,7 @@ public class VoucherService implements VoucherController {
                         .status(voucher.getStatus())
                         .orderId(voucher.getOrderId())
                         .userGovtIdType(voucher.getUserGovtIDType())
+                        .retryCount(0L)
                         .build();
         voucherEntity = voucherRepository.save(voucherEntity);
         return mapEntityToModel(voucherEntity);
@@ -72,6 +73,8 @@ public class VoucherService implements VoucherController {
                 .userLocation(voucherEntity.getUserLocation())
                 .status(voucherEntity.getStatus())
                 .orderId(voucherEntity.getIssuerId())
+                .retryCount(voucherEntity.getRetryCount())
+                .lastFailureReason(voucherEntity.getLastFailureReason())
                 .build();
     }
 
