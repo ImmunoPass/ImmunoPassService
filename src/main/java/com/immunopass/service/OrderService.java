@@ -1,5 +1,15 @@
 package com.immunopass.service;
 
+import static com.immunopass.utils.ParameterCheckUtil.checkEmptyOrNull;
+import static com.immunopass.utils.ParameterCheckUtil.checkLength;
+import static com.immunopass.utils.ParameterCheckUtil.cleanMobileNumber;
+import static com.immunopass.utils.ParameterCheckUtil.cleanName;
+import java.io.IOException;
+import java.net.URL;
+import java.util.List;
+import java.util.UUID;
+import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 import com.immunopass.controller.OrderController;
 import com.immunopass.entity.OrderEntity;
 import com.immunopass.enums.IDType;
@@ -10,17 +20,10 @@ import com.immunopass.model.Voucher;
 import com.immunopass.repository.OrderRepository;
 import com.immunopass.restclient.SMSService;
 import com.immunopass.utils.S3Util;
-import com.immunopass.utils.Utils;
+import com.immunopass.utils.FileUtil;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-
-import java.io.IOException;
-import java.net.URL;
-import java.util.List;
-import java.util.UUID;
 import java.util.stream.Collectors;
-
-import static com.immunopass.utils.ParameterCheckUtils.*;
 
 @Service
 public class OrderService implements OrderController {
@@ -40,7 +43,7 @@ public class OrderService implements OrderController {
     }
 
     public void uploadOrder(MultipartFile file, Long createdBy) throws IOException {
-        List<String> lines = Utils.getFileLines(file);
+        List<String> lines = FileUtil.getFileLines(file);
         String orderUUID = UUID.randomUUID().toString();
 
         // validate lines
@@ -83,7 +86,7 @@ public class OrderService implements OrderController {
             String govtIDNumber = checkLength(cols[3], 40);
             String empID = checkLength(cols[4], 40);
             voucherService.createVoucher(Voucher.builder()
-                    .voucherCode(Utils.getRandomString(8))
+                    .voucherCode(FileUtil.getRandomString(8))
                     .userGovtIDType(idType)
                     .issuerId(order.getCreatedBy())
                     .orderId(order.getId())
