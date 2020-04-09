@@ -21,6 +21,9 @@ import com.immunopass.repository.OrderRepository;
 import com.immunopass.restclient.SMSService;
 import com.immunopass.utils.S3Util;
 import com.immunopass.utils.FileUtil;
+import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+import java.util.stream.Collectors;
 
 @Service
 public class OrderService implements OrderController {
@@ -62,6 +65,13 @@ public class OrderService implements OrderController {
                 .createdBy(createdBy)
                 .build()
         );
+    }
+
+    public List<Order> getOrdersHavingStatus(OrderStatus status) {
+        return orderRepository.getOrdersHavingStatus(status.toString())
+                .stream()
+                .map(this::mapEntityToModel)
+                .collect(Collectors.toList());
     }
 
     public void createVouchers(Order order) throws IOException {
