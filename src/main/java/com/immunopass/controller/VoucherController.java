@@ -5,6 +5,7 @@ import com.immunopass.model.VoucherRequest;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.List;
 
 
 @RestController
@@ -16,5 +17,8 @@ public interface VoucherController {
 
     @PostMapping("/voucher_code")
     Voucher getVoucher(@Valid @RequestBody final VoucherRequest voucherRequest);
+
+    @GetMapping
+    List<Voucher> getVouchers();
 
 }
