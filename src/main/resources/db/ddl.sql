@@ -32,21 +32,54 @@ SET default_table_access_method = heap;
 -- Name: account; Type: TABLE; Schema: immunopass; Owner: elemential
 --
 
-CREATE TABLE immunopass.account (
-    id bigint DEFAULT nextval('immunopass.account_id_seq'::regclass) NOT NULL,
-    name character varying(255) NOT NULL,
-    identifier character varying(255) NOT NULL,
-    identifier_type character varying(255) NOT NULL,
-    password_hash character varying(255),
-    organization_id bigint NOT NULL,
-    organization_type character varying(255) NOT NULL,
-    status character varying(255) NOT NULL,
-    created_at timestamp(0) with time zone DEFAULT CURRENT_TIMESTAMP NOT NULL,
-    updated_at timestamp(0) with time zone DEFAULT CURRENT_TIMESTAMP NOT NULL
-);
+-- Table: immunopass.account
 
+-- DROP TABLE immunopass.account;
 
-ALTER TABLE immunopass.account OWNER TO elemential;
+CREATE TABLE immunopass.account
+(
+    id bigint NOT NULL DEFAULT nextval('immunopass.account_id_seq'::regclass),
+    name character varying(255) COLLATE pg_catalog."default" NOT NULL,
+    identifier character varying(255) COLLATE pg_catalog."default" NOT NULL,
+    identifier_type character varying(255) COLLATE pg_catalog."default" NOT NULL,
+    password_hash character varying(255) COLLATE pg_catalog."default",
+    organization_id bigint,
+    pathology_lab_id bigint,
+    status character varying(255) COLLATE pg_catalog."default" NOT NULL,
+    created_at timestamp(0) with time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at timestamp(0) with time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT account_pkey PRIMARY KEY (id),
+    CONSTRAINT identifier_uniq UNIQUE (identifier),
+    CONSTRAINT fk_acct_organization_id FOREIGN KEY (organization_id)
+        REFERENCES immunopass.organization (id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION,
+    CONSTRAINT fk_acct_path_lab_id FOREIGN KEY (pathology_lab_id)
+        REFERENCES immunopass.pathology_lab (id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+)
+
+TABLESPACE pg_default;
+
+ALTER TABLE immunopass.account
+    OWNER to elemential;
+-- Index: fki_fk_acct_organization_id
+
+-- DROP INDEX immunopass.fki_fk_acct_organization_id;
+
+CREATE INDEX fki_fk_acct_organization_id
+    ON immunopass.account USING btree
+    (organization_id ASC NULLS LAST)
+    TABLESPACE pg_default;
+-- Index: fki_fk_acct_path_lab_id
+
+-- DROP INDEX immunopass.fki_fk_acct_path_lab_id;
+
+CREATE INDEX fki_fk_acct_path_lab_id
+    ON immunopass.account USING btree
+    (pathology_lab_id ASC NULLS LAST)
+    TABLESPACE pg_default;
 
 --
 -- TOC entry 218 (class 1259 OID 16653)
