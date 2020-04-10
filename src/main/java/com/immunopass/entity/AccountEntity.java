@@ -2,7 +2,6 @@ package com.immunopass.entity;
 
 import com.immunopass.enums.EntityStatus;
 import com.immunopass.enums.IdentifierType;
-import com.immunopass.enums.OrganizationType;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -32,10 +31,9 @@ public class AccountEntity {
 
     private String passwordHash;
 
-    private Long organizationId;
+    private Long pathologyLabId;
 
-    @Enumerated(value = EnumType.STRING)
-    private OrganizationType organizationType;
+    private Long organizationId;
 
     @Enumerated(value = EnumType.STRING)
     private EntityStatus status;
