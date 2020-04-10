@@ -1,12 +1,12 @@
 package com.immunopass.model;
 
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
 import com.immunopass.enums.EntityStatus;
 import com.immunopass.enums.IdentifierType;
-import com.immunopass.enums.OrganizationType;
 import lombok.Builder;
 import lombok.Getter;
+
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 
 
 @Getter
@@ -27,11 +27,9 @@ public class Account {
 
     private final String passwordHash;
 
-    @NotNull
-    private final Long organizationId;
+    private final Long pathologyLabId;
 
-    @NotNull
-    private final OrganizationType organizationType;
+    private final Long organizationId;
 
     private final EntityStatus status;
 }

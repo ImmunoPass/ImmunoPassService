@@ -25,9 +25,9 @@ public class AccountService implements AccountController {
                             AccountEntity.builder()
                                     .name(account.getName())
                                     .identifier(account.getIdentifier())
+                                    .pathologyLabId(account.getPathologyLabId())
                                     .identifierType(account.getIdentifierType())
                                     .organizationId(account.getOrganizationId())
-                                    .organizationType(account.getOrganizationType())
                                     .status(EntityStatus.ACTIVE)
                                     .build();
                     accountEntity = accountRepository.save(accountEntity);
@@ -47,9 +47,9 @@ public class AccountService implements AccountController {
                 .id(accountEntity.getId())
                 .name(accountEntity.getName())
                 .identifier(accountEntity.getIdentifier())
+                .pathologyLabId(accountEntity.getPathologyLabId())
                 .identifierType(accountEntity.getIdentifierType())
                 .organizationId(accountEntity.getOrganizationId())
-                .organizationType(accountEntity.getOrganizationType())
                 .status(accountEntity.getStatus())
                 .build();
     }
