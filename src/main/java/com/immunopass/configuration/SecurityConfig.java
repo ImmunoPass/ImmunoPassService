@@ -16,7 +16,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private JwtRequestFilter jwtRequestFilter;
 
     @Override protected void configure(final HttpSecurity http) throws Exception {
-        http.csrf()
+        http.cors().and()
+                .csrf()
                 .disable()
                 .authorizeRequests()
                 .antMatchers("/v1/send_otp").permitAll()
