@@ -58,7 +58,7 @@ CREATE TABLE immunopass.account
         REFERENCES immunopass.pathology_lab (id) MATCH SIMPLE
         ON UPDATE NO ACTION
         ON DELETE NO ACTION
-)
+);
 
 TABLESPACE pg_default;
 
