@@ -1,13 +1,15 @@
 package com.immunopass.service;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 import com.immunopass.controller.ImmunopassController;
 import com.immunopass.entity.ImmunopassEntity;
 import com.immunopass.model.Immunopass;
 import com.immunopass.model.VerifyImmunopassRequest;
 import com.immunopass.repository.ImmunopassRepository;
 import com.immunopass.restclient.SMSService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 
 @Service
@@ -20,6 +22,12 @@ public class ImmunopassService implements ImmunopassController {
     private SMSService smsService;
 
     @Override public Immunopass createImmunopass(final Immunopass immunopass) {
+        if (immunopassRepository
+                .findByUserMobile(immunopass.getUserMobile()).isPresent()) {
+            throw new ResponseStatusException(
+                    HttpStatus.CONFLICT,
+                    "Resource with this mobile number already exists.");
+        }
         String code = null;
         while (checkCodeForUniqueness(code) == false) {
             code = smsService.generateUniqueCode(8);
