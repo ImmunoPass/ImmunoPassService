@@ -1,17 +1,17 @@
 package com.immunopass.service;
 
+import java.util.List;
+import java.util.stream.Collectors;
+import javax.validation.Valid;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import com.immunopass.controller.VoucherController;
 import com.immunopass.entity.VoucherEntity;
 import com.immunopass.enums.VoucherStatus;
+import com.immunopass.mapper.VoucherMapper;
 import com.immunopass.model.Voucher;
 import com.immunopass.model.VoucherRequest;
 import com.immunopass.repository.VoucherRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import javax.validation.Valid;
-import java.util.List;
-import java.util.stream.Collectors;
 
 
 @Service
@@ -36,14 +36,14 @@ public class VoucherService implements VoucherController {
                         .retryCount(0L)
                         .build();
         voucherEntity = voucherRepository.save(voucherEntity);
-        return mapEntityToModel(voucherEntity);
+        return VoucherMapper.map(voucherEntity);
     }
 
 
     List<Voucher> getVouchersByOrderID(Long orderID) {
         return voucherRepository.getVouchersForOrder(orderID)
                 .stream()
-                .map(this::mapEntityToModel)
+                .map(VoucherMapper::map)
                 .collect(Collectors.toList());
     }
 
@@ -58,24 +58,6 @@ public class VoucherService implements VoucherController {
 
     void increaseRetryCount(Long voucherID, String reason) {
         voucherRepository.increaseRetryCount(voucherID, reason);
-    }
-
-    private Voucher mapEntityToModel(VoucherEntity voucherEntity) {
-        return Voucher.builder()
-                .id(voucherEntity.getId())
-                .voucherCode(voucherEntity.getVoucherCode())
-                .issuerId(voucherEntity.getIssuerId())
-                .userName(voucherEntity.getUserName())
-                .userMobile(voucherEntity.getUserMobile())
-                .userEmpId(voucherEntity.getUserEmpId())
-                .userGovernmentId(voucherEntity.getUserGovernmentId())
-                .userGovtIDType(voucherEntity.getUserGovtIdType())
-                .userLocation(voucherEntity.getUserLocation())
-                .status(voucherEntity.getStatus())
-                .orderId(voucherEntity.getIssuerId())
-                .retryCount(voucherEntity.getRetryCount())
-                .lastFailureReason(voucherEntity.getLastFailureReason())
-                .build();
     }
 
     @Override
@@ -95,14 +77,14 @@ public class VoucherService implements VoucherController {
         if(voucher == null) {
             throw new RuntimeException("Voucher not found");
         }
-        return mapEntityToModel(voucher);
+        return VoucherMapper.map(voucher);
     }
 
     @Override
     public List<Voucher> getVouchers() {
         return  voucherRepository.findAll()
                 .stream()
-                .map(this::mapEntityToModel)
+                .map(VoucherMapper::map)
                 .collect(Collectors.toList());
     }
 }

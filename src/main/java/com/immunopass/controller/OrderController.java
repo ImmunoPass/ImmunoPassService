@@ -13,11 +13,4 @@ public interface OrderController {
     @PostMapping("/createOrder")
     public void createOrder(@RequestParam("file") MultipartFile file);
 
-    //todo: Remove after writing cron for creating vouchers.
-    @PostMapping("/createVouchers")
-    public void createVouchers(@RequestParam("id") Long id);
-
-    //todo: Remove after writing cron for processing orders.
-    @PostMapping("/processOrder")
-    public void processOrder(@RequestParam("id") Long id);
 }

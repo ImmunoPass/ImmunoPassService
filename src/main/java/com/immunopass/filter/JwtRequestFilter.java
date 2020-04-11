@@ -11,8 +11,9 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
+import com.immunopass.model.Account;
 import com.immunopass.repository.AccountRepository;
-import com.immunopass.utils.JwtUtil;
+import com.immunopass.util.JwtUtil;
 
 
 @Component
@@ -26,32 +27,24 @@ public class JwtRequestFilter extends OncePerRequestFilter {
     protected void doFilterInternal(final HttpServletRequest httpServletRequest,
             final HttpServletResponse httpServletResponse, final FilterChain filterChain)
             throws ServletException, IOException {
+
         String authorizationHeader = httpServletRequest.getHeader("Authorization");
 
-        Long accountId = null;
-        String jwt = null;
+        Account account = null;
+        boolean isTokenExpired = true;
 
         if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
-            jwt = authorizationHeader.substring(7);
-            try {
-                accountId = Long.parseLong(jwtUtil.extractAccountId(jwt));
-            } catch (NumberFormatException e) {
-                // TODO: Log error
-            }
+            String jwt = authorizationHeader.substring(7);
+            account = jwtUtil.extractAccount(jwt);
+            isTokenExpired = jwtUtil.isTokenExpired(jwt);
         }
 
-        if (accountId != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-            final String finalJwt = jwt;
-            accountRepository.findById(accountId)
-                    .ifPresent(accountEntity -> {
-                        if (jwtUtil.validateToken(finalJwt, accountEntity)) {
-                            UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken =
-                                    new UsernamePasswordAuthenticationToken(accountEntity, null, null);
-                            usernamePasswordAuthenticationToken
-                                    .setDetails(new WebAuthenticationDetailsSource().buildDetails(httpServletRequest));
-                            SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
-                        }
-                    });
+        if (account != null && !isTokenExpired && SecurityContextHolder.getContext().getAuthentication() == null) {
+            UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken =
+                    new UsernamePasswordAuthenticationToken(account, null, null);
+            usernamePasswordAuthenticationToken
+                    .setDetails(new WebAuthenticationDetailsSource().buildDetails(httpServletRequest));
+            SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
         }
         filterChain.doFilter(httpServletRequest, httpServletResponse);
     }
