@@ -10,7 +10,8 @@ import com.immunopass.controller.OtpController;
 import com.immunopass.entity.OtpEntity;
 import com.immunopass.enums.IdentifierType;
 import com.immunopass.enums.OtpStatus;
-import com.immunopass.utils.JwtUtil;
+import com.immunopass.mapper.AccountMapper;
+import com.immunopass.util.JwtUtil;
 import com.immunopass.model.SendOtpRequest;
 import com.immunopass.model.SendOtpResponse;
 import com.immunopass.model.VerifyOtpRequest;
@@ -121,10 +122,11 @@ public class OtpService implements OtpController {
     private VerifyOtpResponse generateAuthTokenAndReturnSuccessResponse(OtpEntity otpEntity) {
         return accountRepository
                 .findByIdentifierAndIdentifierType(otpEntity.getIdentifier(), otpEntity.getIdentifierType())
-                .map(accountEntity ->
+                .map(AccountMapper::map)
+                .map(account ->
                         VerifyOtpResponse
                                 .builder()
-                                .accessToken(jwtUtil.generateToken(accountEntity))
+                                .accessToken(jwtUtil.generateToken(account))
                                 .build())
                 .orElse(null);
     }

@@ -1,4 +1,4 @@
-package com.immunopass.utils;
+package com.immunopass.util;
 
 import lombok.experimental.UtilityClass;
 

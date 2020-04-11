@@ -1,4 +1,4 @@
-package com.immunopass.utils;
+package com.immunopass.util;
 
 import static java.util.concurrent.CompletableFuture.supplyAsync;
 import java.io.BufferedReader;
