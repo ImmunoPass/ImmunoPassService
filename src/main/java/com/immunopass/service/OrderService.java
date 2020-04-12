@@ -47,15 +47,7 @@ public class OrderService implements OrderController {
     public void createOrder(MultipartFile file) {
         Account account = (Account) SecurityContextHolder.getContext().getAuthentication()
                 .getPrincipal();
-        try {
-            uploadOrder(file, account.getId());
-        } catch (IOException e) {
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,
-                    "Error in uploading file " + e.getLocalizedMessage());
-        }
-    }
 
-    private void uploadOrder(MultipartFile file, Long createdBy) throws IOException {
         List<String> lines = FileUtil.getFileLines(file);
         String orderUUID = UUID.randomUUID().toString();
 
@@ -69,19 +61,25 @@ public class OrderService implements OrderController {
             checkLength(cols[3], 40);
             checkLength(cols[4], 40);
         }
-        URL s3URL = s3Utill.uploadDocumentSync(
-                file.getInputStream(),
-                "text/csv",
-                null,
-                orderUUID + "_order_file.csv");
-        orderRepository.save(OrderEntity.builder()
-                .status(OrderStatus.CREATED)
-                .uploadedFile(s3URL.toString())
-                .voucherCount(lines.size())
-                .uploadedFile(s3URL.toString())
-                .createdBy(createdBy)
-                .build()
-        );
+        try {
+            URL s3URL = s3Utill.uploadDocumentSync(
+                    file.getInputStream(),
+                    "text/csv",
+                    null,
+                    orderUUID + "_order_file.csv");
+            orderRepository.save(OrderEntity.builder()
+                    .status(OrderStatus.CREATED)
+                    .uploadedFile(s3URL.toString())
+                    .voucherCount(lines.size())
+                    .uploadedFile(s3URL.toString())
+                    .createdBy(account.getId())
+                    .build()
+            );
+        } catch (IOException e) {
+            throw new ResponseStatusException(
+                    HttpStatus.INTERNAL_SERVER_ERROR,
+                    "Error uploading the file to the server.");
+        }
     }
 
     public void createVouchers() {
