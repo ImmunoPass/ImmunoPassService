@@ -15,9 +15,8 @@ import com.immunopass.enums.OtpStatus;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Getter;
+import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 
 @Entity
@@ -25,8 +24,7 @@ import lombok.Setter;
 @Builder
 @AllArgsConstructor(access = AccessLevel.PACKAGE)
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
-@Getter
-@Setter
+@Data
 public class OtpEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

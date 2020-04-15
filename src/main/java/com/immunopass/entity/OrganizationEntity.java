@@ -15,9 +15,8 @@ import com.immunopass.enums.OrganizationType;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Getter;
+import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 
 @Entity
@@ -25,8 +24,7 @@ import lombok.Setter;
 @Builder
 @AllArgsConstructor(access = AccessLevel.PACKAGE)
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
-@Getter
-@Setter(value = AccessLevel.PACKAGE)
+@Data
 public class OrganizationEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -42,7 +40,9 @@ public class OrganizationEntity {
 
     private Integer totalVouchers;
 
-    private Integer usedVouchers;
+    private Integer allotedVouchers;
+
+    private Integer redeemedVouchers;
 
     @CreationTimestamp
     private LocalDateTime createdAt;

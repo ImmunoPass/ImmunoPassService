@@ -1,19 +1,18 @@
 package com.immunopass.model;
 
+import java.time.LocalDateTime;
 import com.immunopass.enums.OrderStatus;
 import lombok.Builder;
 import lombok.Getter;
 
-import java.time.LocalDateTime;
-
 
 @Getter
 @Builder
-public class Order {
+public class VoucherOrder {
     private final Long id;
     private final Integer voucherCount;
     private final String uploadedFile;
     private final OrderStatus status;
     private final Long createdBy;
-    private LocalDateTime createdAt;
+    private final LocalDateTime createdAt;
 }

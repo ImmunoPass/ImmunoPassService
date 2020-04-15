@@ -33,7 +33,7 @@ public class PathologyLabService implements PathologyLabController {
         return PathologyLabMapper.map(pathologyLabEntity);
     }
 
-    @Override public PathologyLab getPahtologyLab(final @NotNull String id) {
+    @Override public PathologyLab getPathologyLab(final @NotNull String id) {
         if (ResourceType.CURRENT.toString().equals(id)) {
             Account account = (Account) SecurityContextHolder.getContext().getAuthentication()
                     .getPrincipal();

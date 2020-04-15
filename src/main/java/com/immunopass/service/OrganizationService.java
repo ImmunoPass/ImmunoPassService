@@ -31,7 +31,8 @@ public class OrganizationService implements OrganizationController {
                         .type(organization.getType())
                         .status(EntityStatus.ACTIVE)
                         .totalVouchers(organization.getTotalVouchers())
-                        .usedVouchers(0)
+                        .allotedVouchers(0)
+                        .redeemedVouchers(0)
                         .build();
         organizationEntity = organizationRepository.save(organizationEntity);
         return OrganizationMapper.map(organizationEntity);

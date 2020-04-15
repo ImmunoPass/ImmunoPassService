@@ -1,5 +1,6 @@
 package com.immunopass.service;
 
+import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -31,7 +32,7 @@ public class ImmunopassService implements ImmunopassController {
         }
         String code = null;
         while (!checkCodeForUniqueness(code)) {
-            code = smsService.generateUniqueCode(8);
+            code = RandomStringUtils.randomAlphabetic(8);
         }
 
         ImmunopassEntity immunopassEntity =
@@ -45,7 +46,7 @@ public class ImmunopassService implements ImmunopassController {
                         .immunoTestResult(immunopass.getImmunoTestResult())
                         .build();
         immunopassEntity = immunopassRepository.save(immunopassEntity);
-        smsService.sendImmunoPass(immunopassEntity.getUserMobile(), immunopassEntity.getImmunopassCode(),
+        smsService.sendImmunoPassSMS(immunopassEntity.getUserMobile(), immunopassEntity.getImmunopassCode(),
                 immunopassEntity.getImmunoTestResult().toString());
         return ImmunopassMapper.map(immunopassEntity);
     }

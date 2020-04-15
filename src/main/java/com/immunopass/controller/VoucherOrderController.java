@@ -7,10 +7,10 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 @RestController
-@RequestMapping("/v1/orders")
-public interface OrderController {
+@RequestMapping("/v1/voucher_orders")
+public interface VoucherOrderController {
 
-    @PostMapping("/createOrder")
-    public void createOrder(@RequestParam("file") MultipartFile file);
+    @PostMapping("")
+    public void createVoucherOrder(@RequestParam("file") MultipartFile file);
 
 }

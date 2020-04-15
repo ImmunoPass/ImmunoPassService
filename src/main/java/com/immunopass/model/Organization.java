@@ -20,5 +20,6 @@ public class Organization {
     private final EntityStatus status;
     @NotNull
     private final Integer totalVouchers;
-    private final Integer usedVouchers;
+    private final Integer allotedVouchers;
+    private final Integer redeemedVouchers;
 }
