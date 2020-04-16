@@ -50,7 +50,6 @@ public class OrganizationService implements OrganizationController {
                         .map(OrganizationMapper::map)
                         .orElseThrow(() ->
                                 new ResponseStatusException(HttpStatus.NOT_FOUND, "Organization doesn't exist."));
-
             } else {
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "User doesn't belong to any organization.");
             }

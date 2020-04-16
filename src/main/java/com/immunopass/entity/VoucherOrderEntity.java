@@ -36,7 +36,9 @@ public class VoucherOrderEntity {
     @Enumerated(value = EnumType.STRING)
     private OrderStatus status;
 
-    private Long createdBy;
+    private Long createdAccountId;
+
+    private Long createdOrganizationId;
 
     @CreationTimestamp
     private LocalDateTime createdAt;

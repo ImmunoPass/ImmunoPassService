@@ -32,7 +32,9 @@ public class VoucherEntity {
 
     private String voucherCode;
 
-    private Long issuerId;
+    private Long issuerAccountId;
+
+    private Long issuerOrganizationId;
 
     private String userName;
 
@@ -49,6 +51,10 @@ public class VoucherEntity {
 
     @Enumerated(value = EnumType.STRING)
     private VoucherStatus status;
+
+    private Long redeemedAccountId;
+
+    private Long redeemedPathologyLabId;
 
     private Long orderId;
 

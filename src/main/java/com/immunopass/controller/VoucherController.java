@@ -11,13 +11,13 @@ import com.immunopass.model.VoucherRequest;
 
 
 @RestController
-@RequestMapping("/v1/vouchers")
+@RequestMapping("/v1")
 public interface VoucherController {
 
-    @PostMapping("/claim_voucher")
-    void claimVoucher(@Valid @RequestBody final VoucherRequest voucherRequest);
+    @PostMapping("/redeem_voucher")
+    Voucher claimVoucher(@Valid @RequestBody final VoucherRequest voucherRequest);
 
-    @PostMapping("/voucher_code")
+    @PostMapping("/fetch_voucher")
     Voucher getVoucher(@Valid @RequestBody final VoucherRequest voucherRequest);
 
     //@GetMapping

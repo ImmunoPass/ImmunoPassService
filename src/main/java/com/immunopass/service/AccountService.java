@@ -24,8 +24,11 @@ public class AccountService implements AccountController {
 
     @Override public Account getAccount(final @NotNull String id) {
         if (StringUtils.equals(ResourceType.CURRENT.toString(), id)) {
-            Account account = (Account) SecurityContextHolder.getContext().getAuthentication()
-                    .getPrincipal();
+            Account account =
+                    (Account) SecurityContextHolder
+                            .getContext()
+                            .getAuthentication()
+                            .getPrincipal();
             return accountRepository
                     .findById(account.getId())
                     .filter(accountEntity -> accountEntity.getStatus() == EntityStatus.ACTIVE)

@@ -13,6 +13,7 @@ public class VoucherOrder {
     private final Integer voucherCount;
     private final String uploadedFile;
     private final OrderStatus status;
-    private final Long createdBy;
+    private final Long createdAccountId;
+    private final Long createdOrganizationId;
     private final LocalDateTime createdAt;
 }

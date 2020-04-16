@@ -12,7 +12,8 @@ public class VoucherOrderMapper {
                 .uploadedFile(voucherOrderEntity.getUploadedFile())
                 .status(voucherOrderEntity.getStatus())
                 .voucherCount(voucherOrderEntity.getVoucherCount())
-                .createdBy(voucherOrderEntity.getCreatedBy())
+                .createdAccountId(voucherOrderEntity.getCreatedAccountId())
+                .createdOrganizationId(voucherOrderEntity.getCreatedOrganizationId())
                 .id(voucherOrderEntity.getId())
                 .build();
     }

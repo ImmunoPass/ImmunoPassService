@@ -64,11 +64,6 @@ public class VoucherOrderService implements VoucherOrderController {
     public void createVoucherOrder(MultipartFile file) {
         Account account = (Account) SecurityContextHolder.getContext().getAuthentication()
                 .getPrincipal();
-        if (account.getOrganizationId() == null) {
-            throw new ResponseStatusException(
-                    HttpStatus.FORBIDDEN,
-                    "User account isn't linked to any organization.");
-        }
         OrganizationEntity organizationEntity =
                 organizationRepository
                         .findById(account.getOrganizationId())
@@ -109,7 +104,8 @@ public class VoucherOrderService implements VoucherOrderController {
                 .uploadedFile(s3URL.toString())
                 .voucherCount(csvRecords.size())
                 .uploadedFile(s3URL.toString())
-                .createdBy(account.getId())
+                .createdAccountId(account.getId())
+                .createdOrganizationId(account.getOrganizationId())
                 .build();
         organizationRepository.save(organizationEntity);
         organizationEntity.setAllotedVouchers(organizationEntity.getAllotedVouchers() + csvRecords.size());
@@ -181,9 +177,12 @@ public class VoucherOrderService implements VoucherOrderController {
         s3Utill.getRecords(voucherOrderEntity.getUploadedFile())
                 .forEach(record -> {
                     String[] fields = record.split(",");
+                    String voucherCode;
+                    do {
+                        voucherCode = RandomStringUtils.randomAlphabetic(8);
+                    } while (voucherRepository.findByVoucherCode(voucherCode).isPresent());
                     VoucherEntity voucherEntity = VoucherEntity.builder()
-                            //TODO: Make sure that voucher code is unique
-                            .voucherCode(RandomStringUtils.randomAlphabetic(8))
+                            .voucherCode(voucherCode)
                             .orderId(voucherOrderEntity.getId())
                             .userName(fields[NAME_INDEX])
                             .userMobile(fields[MOBILE_NUMBER_INDEX])
@@ -191,8 +190,8 @@ public class VoucherOrderService implements VoucherOrderController {
                             .userGovernmentId(fields[ID_CARD_NUMBER_INDEX])
                             .userEmpId(fields[EMP_ID_INDEX])
                             .status(VoucherStatus.ALLOTTED)
-                            //TODO: Issuer should be the organization.
-                            .issuerId(voucherOrderEntity.getCreatedBy())
+                            .issuerAccountId(voucherOrderEntity.getCreatedAccountId())
+                            .issuerOrganizationId(voucherOrderEntity.getCreatedOrganizationId())
                             .build();
                     voucherRepository.save(voucherEntity);
                 });

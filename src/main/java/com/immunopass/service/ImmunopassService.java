@@ -30,10 +30,11 @@ public class ImmunopassService implements ImmunopassController {
                     HttpStatus.CONFLICT,
                     "Resource with this mobile number already exists.");
         }
-        String code = null;
-        while (!checkCodeForUniqueness(code)) {
-            code = RandomStringUtils.randomAlphabetic(8);
-        }
+        // Generate unique immunopass code
+        String immunopassCode;
+        do {
+            immunopassCode = RandomStringUtils.randomAlphabetic(8);
+        } while (immunopassRepository.findByImmunopassCode(immunopassCode).isPresent());
 
         ImmunopassEntity immunopassEntity =
                 ImmunopassEntity.builder()
@@ -42,7 +43,7 @@ public class ImmunopassService implements ImmunopassController {
                         .userEmpId(immunopass.getUserMobile())
                         .userGovernmentId(immunopass.getUserGovernmentId())
                         .userLocation(immunopass.getUserLocation())
-                        .immunopassCode(code)
+                        .immunopassCode(immunopassCode)
                         .immunoTestResult(immunopass.getImmunoTestResult())
                         .build();
         immunopassEntity = immunopassRepository.save(immunopassEntity);
@@ -65,10 +66,6 @@ public class ImmunopassService implements ImmunopassController {
         } else {
             return null;
         }
-    }
-
-    private boolean checkCodeForUniqueness(String code) {
-        return code != null && !immunopassRepository.findByImmunopassCode(code).isPresent();
     }
 
 }
