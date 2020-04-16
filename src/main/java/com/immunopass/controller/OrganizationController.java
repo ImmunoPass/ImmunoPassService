@@ -1,6 +1,5 @@
 package com.immunopass.controller;
 
-import java.util.List;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -25,10 +24,4 @@ public interface OrganizationController {
     @GetMapping("/{id}")
     Organization getOrganization(@NotNull @PathVariable final String id);
 
-    /*
-     * Disabled this API, as we haven't specified yet who will have the authorization to fetch a list of organizations.
-     * Once we have specified a specific role, then we can enable this.
-     */
-    //@GetMapping
-    List<Organization> getOrganizations();
 }

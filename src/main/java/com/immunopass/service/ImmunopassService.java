@@ -1,5 +1,8 @@
 package com.immunopass.service;
 
+import org.apache.commons.lang3.RandomStringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -16,6 +19,8 @@ import com.immunopass.restclient.SMSService;
 @Service
 public class ImmunopassService implements ImmunopassController {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(AccountService.class);
+
     @Autowired
     private ImmunopassRepository immunopassRepository;
 
@@ -29,10 +34,11 @@ public class ImmunopassService implements ImmunopassController {
                     HttpStatus.CONFLICT,
                     "Resource with this mobile number already exists.");
         }
-        String code = null;
-        while (!checkCodeForUniqueness(code)) {
-            code = smsService.generateUniqueCode(8);
-        }
+        // Generate unique immunopass code
+        String immunopassCode;
+        do {
+            immunopassCode = RandomStringUtils.randomAlphabetic(8);
+        } while (immunopassRepository.findByImmunopassCode(immunopassCode).isPresent());
 
         ImmunopassEntity immunopassEntity =
                 ImmunopassEntity.builder()
@@ -41,11 +47,11 @@ public class ImmunopassService implements ImmunopassController {
                         .userEmpId(immunopass.getUserMobile())
                         .userGovernmentId(immunopass.getUserGovernmentId())
                         .userLocation(immunopass.getUserLocation())
-                        .immunopassCode(code)
+                        .immunopassCode(immunopassCode)
                         .immunoTestResult(immunopass.getImmunoTestResult())
                         .build();
         immunopassEntity = immunopassRepository.save(immunopassEntity);
-        smsService.sendImmunoPass(immunopassEntity.getUserMobile(), immunopassEntity.getImmunopassCode(),
+        smsService.sendImmunoPassSMS(immunopassEntity.getUserMobile(), immunopassEntity.getImmunopassCode(),
                 immunopassEntity.getImmunoTestResult().toString());
         return ImmunopassMapper.map(immunopassEntity);
     }
@@ -64,10 +70,6 @@ public class ImmunopassService implements ImmunopassController {
         } else {
             return null;
         }
-    }
-
-    private boolean checkCodeForUniqueness(String code) {
-        return code != null && !immunopassRepository.findByImmunopassCode(code).isPresent();
     }
 
 }

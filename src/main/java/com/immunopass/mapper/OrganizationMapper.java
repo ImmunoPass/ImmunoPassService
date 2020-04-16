@@ -14,7 +14,8 @@ public class OrganizationMapper {
                 .type(organizationEntity.getType())
                 .status(organizationEntity.getStatus())
                 .totalVouchers(organizationEntity.getTotalVouchers())
-                .usedVouchers(organizationEntity.getUsedVouchers())
+                .allotedVouchers(organizationEntity.getAllotedVouchers())
+                .redeemedVouchers(organizationEntity.getRedeemedVouchers())
                 .build();
     }
 }

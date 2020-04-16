@@ -1,24 +1,22 @@
 package com.immunopass.controller;
 
+import javax.validation.Valid;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 import com.immunopass.model.Voucher;
 import com.immunopass.model.VoucherRequest;
-import org.springframework.web.bind.annotation.*;
-
-import javax.validation.Valid;
-import java.util.List;
 
 
 @RestController
-@RequestMapping("/v1/vouchers")
+@RequestMapping("/v1")
 public interface VoucherController {
 
-    @PostMapping("/claim_voucher")
-    void claimVoucher(@Valid @RequestBody final VoucherRequest voucherRequest);
+    @PostMapping("/redeem_voucher")
+    Voucher redeemVoucher(@Valid @RequestBody final VoucherRequest voucherRequest);
 
-    @PostMapping("/voucher_code")
+    @PostMapping("/fetch_voucher")
     Voucher getVoucher(@Valid @RequestBody final VoucherRequest voucherRequest);
-
-    @GetMapping
-    List<Voucher> getVouchers();
 
 }

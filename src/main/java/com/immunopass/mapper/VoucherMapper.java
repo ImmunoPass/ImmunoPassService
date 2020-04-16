@@ -11,7 +11,8 @@ public class VoucherMapper {
         return Voucher.builder()
                 .id(voucherEntity.getId())
                 .voucherCode(voucherEntity.getVoucherCode())
-                .issuerId(voucherEntity.getIssuerId())
+                .issuerAccountId(voucherEntity.getIssuerAccountId())
+                .issuerOrganizationId(voucherEntity.getIssuerOrganizationId())
                 .userName(voucherEntity.getUserName())
                 .userMobile(voucherEntity.getUserMobile())
                 .userEmpId(voucherEntity.getUserEmpId())
@@ -19,9 +20,9 @@ public class VoucherMapper {
                 .userGovtIDType(voucherEntity.getUserGovtIdType())
                 .userLocation(voucherEntity.getUserLocation())
                 .status(voucherEntity.getStatus())
-                .orderId(voucherEntity.getIssuerId())
-                .retryCount(voucherEntity.getRetryCount())
-                .lastFailureReason(voucherEntity.getLastFailureReason())
+                .redeemedAccountId(voucherEntity.getRedeemedAccountId())
+                .redeemedPathologyLabId(voucherEntity.getRedeemedPathologyLabId())
+                .orderId(voucherEntity.getIssuerAccountId())
                 .build();
     }
 }

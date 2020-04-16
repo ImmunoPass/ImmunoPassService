@@ -1,19 +1,22 @@
 package com.immunopass.entity;
 
 import java.time.LocalDateTime;
-import javax.persistence.*;
-
-import com.immunopass.enums.IDType;
-import com.immunopass.enums.VoucherType;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
+import com.immunopass.enums.IDType;
 import com.immunopass.enums.VoucherStatus;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Getter;
+import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 
 @Entity
@@ -21,8 +24,7 @@ import lombok.Setter;
 @Builder
 @AllArgsConstructor(access = AccessLevel.PACKAGE)
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
-@Getter
-@Setter(value = AccessLevel.PACKAGE)
+@Data
 public class VoucherEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -30,7 +32,9 @@ public class VoucherEntity {
 
     private String voucherCode;
 
-    private Long issuerId;
+    private Long issuerAccountId;
+
+    private Long issuerOrganizationId;
 
     private String userName;
 
@@ -48,11 +52,15 @@ public class VoucherEntity {
     @Enumerated(value = EnumType.STRING)
     private VoucherStatus status;
 
+    private Long redeemedAccountId;
+
+    private Long redeemedPathologyLabId;
+
     private Long orderId;
 
     private Long immunopassId;
 
-    private Long retryCount;
+    private Integer retryCount;
 
     private String lastFailureReason;
 

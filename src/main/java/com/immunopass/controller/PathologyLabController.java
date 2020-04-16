@@ -22,6 +22,6 @@ public interface PathologyLabController {
     PathologyLab createPathologyLab(@Valid @RequestBody final PathologyLab pathologyLab);
 
     @GetMapping("/{id}")
-    PathologyLab getPahtologyLab(@NotNull @PathVariable final String id);
+    PathologyLab getPathologyLab(@NotNull @PathVariable final String id);
 
 }

@@ -1,73 +1,46 @@
 package com.immunopass.util;
 
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.function.Function;
-import org.springframework.beans.factory.annotation.Autowired;
+import javax.crypto.SecretKey;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
-import org.springframework.web.server.ResponseStatusException;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.immunopass.model.Account;
-import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
+import io.jsonwebtoken.jackson.io.JacksonDeserializer;
+import io.jsonwebtoken.lang.Maps;
 import io.jsonwebtoken.security.Keys;
 
 
 @Component
 public class JwtUtil {
 
-    @Value("${jwt.secret_key}")
-    private String secretKey;
+    private static final String ACCOUNT = "account";
+    private static final int EXPIRY_DURATION = 4 * 60 * 60 * 1000;
 
-    @Autowired
-    private ObjectMapper objectMapper;
+    private final SecretKey secretKey;
 
-    public String generateToken(Account account) {
-        try {
-            Map<String, Object> claims = new HashMap<>();
-            return createToken(claims, objectMapper.writeValueAsString(account));
-        } catch (JsonProcessingException e) {
-            //TODO: Add logs
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+    public JwtUtil(@Value("${jwt.secret_key}") String secretKey) {
+        this.secretKey = Keys.hmacShaKeyFor(Decoders.BASE64.decode(secretKey));
     }
 
-    private String createToken(Map<String, Object> claims, String subject) {
+    public String generateToken(Account account) {
         return Jwts.builder()
-                .setClaims(claims)
-                .setSubject(subject)
+                .claim(ACCOUNT, account)
                 .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + 4 * 60 * 60 * 1000))
-                .signWith(Keys.hmacShaKeyFor(Decoders.BASE64.decode(secretKey)))
+                .setExpiration(new Date(System.currentTimeMillis() + EXPIRY_DURATION))
+                .signWith(secretKey)
                 .compact();
     }
 
     public Account extractAccount(String token) {
-        try {
-            String accountString = extractClaim(token, Claims::getSubject);
-            return objectMapper.readValue(accountString, Account.class);
-        } catch (JsonProcessingException e) {
-            //TODO: Add logs
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
-
-    public boolean isTokenExpired(String token) {
-        return extractClaim(token, Claims::getExpiration).before(new Date());
-    }
-
-    private <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
-        Claims claims = Jwts.parserBuilder()
-                .setSigningKey(Keys.hmacShaKeyFor(Decoders.BASE64.decode(secretKey)))
+        return Jwts.parserBuilder()
+                .deserializeJsonWith(new JacksonDeserializer(Maps.of(ACCOUNT, Account.class).build()))
+                .setSigningKey(secretKey)
                 .build()
                 .parseClaimsJws(token)
-                .getBody();
-        return claimsResolver.apply(claims);
+                .getBody()
+                .get(ACCOUNT, Account.class);
     }
 
 }

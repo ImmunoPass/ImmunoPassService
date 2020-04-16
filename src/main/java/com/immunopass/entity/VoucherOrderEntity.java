@@ -10,8 +10,7 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
-import com.immunopass.enums.EntityStatus;
-import com.immunopass.enums.OrganizationType;
+import com.immunopass.enums.OrderStatus;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -20,29 +19,26 @@ import lombok.NoArgsConstructor;
 
 
 @Entity
-@Table(schema = "immunopass", name = "organization")
+@Table(schema = "immunopass", name = "voucher_order")
 @Builder
 @AllArgsConstructor(access = AccessLevel.PACKAGE)
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Data
-public class OrganizationEntity {
+public class VoucherOrderEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String name;
+    private Integer voucherCount;
+
+    private String uploadedFile;
 
     @Enumerated(value = EnumType.STRING)
-    private OrganizationType type;
+    private OrderStatus status;
 
-    @Enumerated(value = EnumType.STRING)
-    private EntityStatus status;
+    private Long createdAccountId;
 
-    private Integer totalVouchers;
-
-    private Integer allotedVouchers;
-
-    private Integer redeemedVouchers;
+    private Long createdOrganizationId;
 
     @CreationTimestamp
     private LocalDateTime createdAt;

@@ -1,13 +1,22 @@
 package com.immunopass.entity;
 
-import com.immunopass.enums.EntityStatus;
-import com.immunopass.enums.IdentifierType;
-import lombok.*;
+import java.time.LocalDateTime;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
-
-import javax.persistence.*;
-import java.time.LocalDateTime;
+import com.immunopass.enums.EntityStatus;
+import com.immunopass.enums.IdentifierType;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 
 @Entity
@@ -15,8 +24,7 @@ import java.time.LocalDateTime;
 @Builder
 @AllArgsConstructor(access = AccessLevel.PACKAGE)
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
-@Getter
-@Setter(value = AccessLevel.PACKAGE)
+@Data
 public class AccountEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

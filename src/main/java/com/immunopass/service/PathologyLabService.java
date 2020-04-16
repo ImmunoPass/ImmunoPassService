@@ -1,6 +1,8 @@
 package com.immunopass.service;
 
 import javax.validation.constraints.NotNull;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -19,6 +21,8 @@ import com.immunopass.repository.PathologyLabRepository;
 @Service
 public class PathologyLabService implements PathologyLabController {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(AccountService.class);
+
     @Autowired
     private PathologyLabRepository pathologyLabRepository;
 
@@ -33,7 +37,7 @@ public class PathologyLabService implements PathologyLabController {
         return PathologyLabMapper.map(pathologyLabEntity);
     }
 
-    @Override public PathologyLab getPahtologyLab(final @NotNull String id) {
+    @Override public PathologyLab getPathologyLab(final @NotNull String id) {
         if (ResourceType.CURRENT.toString().equals(id)) {
             Account account = (Account) SecurityContextHolder.getContext().getAuthentication()
                     .getPrincipal();

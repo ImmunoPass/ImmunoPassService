@@ -1,28 +1,28 @@
 package com.immunopass.restclient;
 
-import com.immunopass.model.Voucher;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.*;
-import org.springframework.http.converter.HttpMessageConverter;
-import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
-import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
-
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Random;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.RequestEntity;
+import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageConverter;
+import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
+import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
+import com.immunopass.model.Voucher;
 
 
 @Service
 public class SMSService {
-    private static final String NUMERIC_STRING = "0123456789";
-    private static final String ALPHANUMERIC_STRING = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
-    private Random random;
     private RestTemplate restTemplate;
 
     @Value("${sms.endpoint}")
@@ -31,9 +31,7 @@ public class SMSService {
     private String auth;
 
     public SMSService() {
-        random = new Random();
         restTemplate = new RestTemplate();
-
         List<HttpMessageConverter<?>> messageConverters = new ArrayList<>();
         //Add the Jackson Message converter
         MappingJackson2HttpMessageConverter converter = new MappingJackson2HttpMessageConverter();
@@ -44,23 +42,6 @@ public class SMSService {
         restTemplate.setMessageConverters(messageConverters);
     }
 
-    public String generateOtp(int numChars) {
-        return generateSequence(numChars, NUMERIC_STRING);
-    }
-
-    public String generateUniqueCode(int numChars) {
-        return generateSequence(numChars, ALPHANUMERIC_STRING);
-    }
-
-    private String generateSequence(int numChars, String vocab) {
-        char[] sequence = new char[numChars];
-        for (int i = 0; i < numChars; i++) {
-            sequence[i] =
-                    vocab.charAt(random.nextInt(vocab.length()));
-        }
-        return new String(sequence);
-    }
-
     public boolean sendOTPSMS(String userName, String to, String otp) {
         LoginOtpRequest otpRequest = LoginOtpRequest.builder()
                 .otp(otp)
@@ -69,7 +50,18 @@ public class SMSService {
         return restExchange(otpRequest, "/v1/sms/login-otp");
     }
 
-    public boolean sendImmunoPass(String to, String token, String status) {
+    public boolean sendVoucherSMS(Voucher voucher) {
+        SendVoucherRequest request = SendVoucherRequest.builder()
+                .to(voucher.getUserMobile())
+                .userMobileNumber(voucher.getUserMobile())
+                .userName(voucher.getUserName())
+                .voucherCode(voucher.getVoucherCode())
+                .userDOB("xx/yy/zzzz") // todo: make DOB optional.
+                .build();
+        return restExchange(request, "/v1/sms/send-voucher");
+    }
+
+    public boolean sendImmunoPassSMS(String to, String token, String status) {
         ImmunoPassRequest passRequest = ImmunoPassRequest.builder()
                 .to(to)
                 .token(token)
@@ -88,11 +80,7 @@ public class SMSService {
             ResponseEntity<SendSMSResponse> otpResponse = restTemplate.exchange(
                     requestEntity, SendSMSResponse.class);
 
-            if (otpResponse.getStatusCode() == HttpStatus.OK) {
-                return true;
-            } else {
-                return false;
-            }
+            return otpResponse.getStatusCode() == HttpStatus.OK;
         } catch (Exception e) {
             e.printStackTrace();
             return false;
@@ -105,17 +93,6 @@ public class SMSService {
         requestHeaders.setContentType(MediaType.APPLICATION_JSON);
         requestHeaders.setAccept(Stream.of(MediaType.ALL).collect(Collectors.toList()));
         return requestHeaders;
-    }
-
-    public boolean sendVoucherSMS(Voucher voucher) {
-        SendVoucherRequest request = SendVoucherRequest.builder()
-                .to(voucher.getUserMobile())
-                .userMobileNumber(voucher.getUserMobile())
-                .userName(voucher.getUserName())
-                .voucherCode(voucher.getVoucherCode())
-                .userDOB("xx/yy/zzzz") // todo: make DOB optional.
-                .build();
-        return restExchange(request, "/v1/sms/send-voucher");
     }
 
 }

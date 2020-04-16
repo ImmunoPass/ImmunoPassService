@@ -1,7 +1,7 @@
 package com.immunopass.service;
 
-import java.util.List;
-import java.util.stream.Collectors;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -20,6 +20,8 @@ import com.immunopass.repository.OrganizationRepository;
 @Service
 public class OrganizationService implements OrganizationController {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(AccountService.class);
+
     @Autowired
     private OrganizationRepository organizationRepository;
 
@@ -31,7 +33,8 @@ public class OrganizationService implements OrganizationController {
                         .type(organization.getType())
                         .status(EntityStatus.ACTIVE)
                         .totalVouchers(organization.getTotalVouchers())
-                        .usedVouchers(0)
+                        .allotedVouchers(0)
+                        .redeemedVouchers(0)
                         .build();
         organizationEntity = organizationRepository.save(organizationEntity);
         return OrganizationMapper.map(organizationEntity);
@@ -49,22 +52,12 @@ public class OrganizationService implements OrganizationController {
                         .map(OrganizationMapper::map)
                         .orElseThrow(() ->
                                 new ResponseStatusException(HttpStatus.NOT_FOUND, "Organization doesn't exist."));
-
             } else {
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "User doesn't belong to any organization.");
             }
         } else {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid Organization ID.");
         }
-    }
-
-    @Override
-    public List<Organization> getOrganizations() {
-        return organizationRepository
-                .findAll()
-                .stream()
-                .map(OrganizationMapper::map)
-                .collect(Collectors.toList());
     }
 
 }

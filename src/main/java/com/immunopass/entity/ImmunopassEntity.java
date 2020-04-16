@@ -14,9 +14,8 @@ import com.immunopass.enums.ImmunoTestResult;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Getter;
+import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 
 @Entity
@@ -24,8 +23,7 @@ import lombok.Setter;
 @Builder
 @AllArgsConstructor(access = AccessLevel.PACKAGE)
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
-@Getter
-@Setter(value = AccessLevel.PACKAGE)
+@Data
 public class ImmunopassEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

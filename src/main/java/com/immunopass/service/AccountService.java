@@ -2,6 +2,8 @@ package com.immunopass.service;
 
 import javax.validation.constraints.NotNull;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -19,13 +21,18 @@ import com.immunopass.repository.AccountRepository;
 @Service
 public class AccountService implements AccountController {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(AccountService.class);
+
     @Autowired
     private AccountRepository accountRepository;
 
     @Override public Account getAccount(final @NotNull String id) {
         if (StringUtils.equals(ResourceType.CURRENT.toString(), id)) {
-            Account account = (Account) SecurityContextHolder.getContext().getAuthentication()
-                    .getPrincipal();
+            Account account =
+                    (Account) SecurityContextHolder
+                            .getContext()
+                            .getAuthentication()
+                            .getPrincipal();
             return accountRepository
                     .findById(account.getId())
                     .filter(accountEntity -> accountEntity.getStatus() == EntityStatus.ACTIVE)

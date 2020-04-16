@@ -1,14 +1,17 @@
 package com.immunopass.service;
 
-import java.util.List;
-import java.util.stream.Collectors;
 import javax.validation.Valid;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 import com.immunopass.controller.VoucherController;
-import com.immunopass.entity.VoucherEntity;
 import com.immunopass.enums.VoucherStatus;
 import com.immunopass.mapper.VoucherMapper;
+import com.immunopass.model.Account;
 import com.immunopass.model.Voucher;
 import com.immunopass.model.VoucherRequest;
 import com.immunopass.repository.VoucherRepository;
@@ -17,74 +20,49 @@ import com.immunopass.repository.VoucherRepository;
 @Service
 public class VoucherService implements VoucherController {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(AccountService.class);
+
     @Autowired
     private VoucherRepository voucherRepository;
 
-    Voucher createVoucher(final Voucher voucher) {
-        VoucherEntity voucherEntity =
-                VoucherEntity.builder()
-                        .voucherCode(voucher.getVoucherCode())
-                        .issuerId(voucher.getIssuerId())
-                        .userName(voucher.getUserName())
-                        .userMobile(voucher.getUserMobile())
-                        .userEmpId(voucher.getUserEmpId())
-                        .userGovernmentId(voucher.getUserGovernmentId())
-                        .userLocation(voucher.getUserLocation())
-                        .status(voucher.getStatus())
-                        .orderId(voucher.getOrderId())
-                        .userGovtIdType(voucher.getUserGovtIDType())
-                        .retryCount(0L)
-                        .build();
-        voucherEntity = voucherRepository.save(voucherEntity);
-        return VoucherMapper.map(voucherEntity);
-    }
-
-
-    List<Voucher> getVouchersByOrderID(Long orderID) {
-        return voucherRepository.getVouchersForOrder(orderID)
-                .stream()
-                .map(VoucherMapper::map)
-                .collect(Collectors.toList());
-    }
-
-
-    void updateVoucherStatusForOrder(Long orderID, VoucherStatus voucherStatus) {
-        voucherRepository.updateVoucherStatusForOrder(voucherStatus.name(), orderID);
-    }
-
-    void updateVoucherStatus(Long voucherID, VoucherStatus voucherStatus) {
-        voucherRepository.updateVoucherStatus(voucherStatus.name(), voucherID);
-    }
-
-    void increaseRetryCount(Long voucherID, String reason) {
-        voucherRepository.increaseRetryCount(voucherID, reason);
-    }
-
     @Override
-    public void claimVoucher(@Valid VoucherRequest voucherRequest) {
-        String voucherCode = voucherRequest.getVoucherCode();
-        VoucherEntity voucher = voucherRepository.findByVoucherCode(voucherCode);
-        if (voucher==null || voucher.getStatus() != VoucherStatus.PROCESSED) {
-            throw new RuntimeException("No available voucher for the code");
+    public Voucher redeemVoucher(@Valid VoucherRequest voucherRequest) {
+        Account account =
+                (Account) SecurityContextHolder
+                        .getContext()
+                        .getAuthentication()
+                        .getPrincipal();
+        if (account.getPathologyLabId() != null) {
+            return voucherRepository.findByVoucherCode(voucherRequest.getVoucherCode())
+                    .filter(voucherEntity -> voucherEntity.getStatus() == VoucherStatus.PROCESSED)
+                    .map(voucherEntity -> {
+                        voucherEntity.setStatus(VoucherStatus.REDEEMED);
+                        voucherEntity.setRedeemedAccountId(account.getId());
+                        voucherEntity.setRedeemedPathologyLabId(account.getPathologyLabId());
+                        return voucherRepository.save(voucherEntity);
+                    })
+                    .map(VoucherMapper::map)
+                    .orElseThrow(() ->
+                            new ResponseStatusException(HttpStatus.BAD_REQUEST, "No valid voucher found!"));
+        } else {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "User doesn't belong to any pathology lab.");
         }
-        voucherRepository.updateVoucherStatus(VoucherStatus.REDEEMED.name(), voucher.getId());
     }
 
     @Override
     public Voucher getVoucher(@Valid VoucherRequest voucherRequest) {
-        String voucherCode = voucherRequest.getVoucherCode();
-        VoucherEntity voucher = voucherRepository.findByVoucherCode(voucherCode);
-        if(voucher == null) {
-            throw new RuntimeException("Voucher not found");
+        Account account =
+                (Account) SecurityContextHolder
+                        .getContext()
+                        .getAuthentication()
+                        .getPrincipal();
+        if (account.getPathologyLabId() != null) {
+            return voucherRepository.findByVoucherCode(voucherRequest.getVoucherCode())
+                    .map(VoucherMapper::map)
+                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "No voucher found!"));
+        } else {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "User doesn't belong to any pathology lab.");
         }
-        return VoucherMapper.map(voucher);
     }
 
-    @Override
-    public List<Voucher> getVouchers() {
-        return  voucherRepository.findAll()
-                .stream()
-                .map(VoucherMapper::map)
-                .collect(Collectors.toList());
-    }
 }
