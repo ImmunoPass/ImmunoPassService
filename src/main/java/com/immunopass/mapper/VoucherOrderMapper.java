@@ -9,12 +9,13 @@ import lombok.experimental.UtilityClass;
 public class VoucherOrderMapper {
     public VoucherOrder map(VoucherOrderEntity voucherOrderEntity) {
         return VoucherOrder.builder()
+                .id(voucherOrderEntity.getId())
                 .uploadedFile(voucherOrderEntity.getUploadedFile())
                 .status(voucherOrderEntity.getStatus())
                 .voucherCount(voucherOrderEntity.getVoucherCount())
                 .createdAccountId(voucherOrderEntity.getCreatedAccountId())
                 .createdOrganizationId(voucherOrderEntity.getCreatedOrganizationId())
-                .id(voucherOrderEntity.getId())
+                .createdAt(voucherOrderEntity.getCreatedAt())
                 .build();
     }
 }

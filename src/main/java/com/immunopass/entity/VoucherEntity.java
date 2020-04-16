@@ -60,7 +60,7 @@ public class VoucherEntity {
 
     private Long immunopassId;
 
-    private Long retryCount;
+    private Integer retryCount;
 
     private String lastFailureReason;
 

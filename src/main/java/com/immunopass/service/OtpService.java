@@ -2,6 +2,8 @@ package com.immunopass.service;
 
 import java.time.LocalDateTime;
 import org.apache.commons.lang3.RandomStringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -25,6 +27,8 @@ import com.immunopass.util.JwtUtil;
 
 @Service
 public class OtpService implements OtpController {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(AccountService.class);
 
     @Autowired
     private AccountRepository accountRepository;

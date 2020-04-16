@@ -1,6 +1,8 @@
 package com.immunopass.model;
 
 import java.time.LocalDateTime;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.immunopass.enums.OrderStatus;
 import lombok.Builder;
 import lombok.Getter;
@@ -8,6 +10,8 @@ import lombok.Getter;
 
 @Getter
 @Builder
+@JsonIgnoreProperties(ignoreUnknown=true)
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class VoucherOrder {
     private final Long id;
     private final Integer voucherCount;

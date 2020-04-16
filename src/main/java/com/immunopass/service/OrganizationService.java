@@ -1,7 +1,7 @@
 package com.immunopass.service;
 
-import java.util.List;
-import java.util.stream.Collectors;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -19,6 +19,8 @@ import com.immunopass.repository.OrganizationRepository;
 
 @Service
 public class OrganizationService implements OrganizationController {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(AccountService.class);
 
     @Autowired
     private OrganizationRepository organizationRepository;
@@ -56,15 +58,6 @@ public class OrganizationService implements OrganizationController {
         } else {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid Organization ID.");
         }
-    }
-
-    @Override
-    public List<Organization> getOrganizations() {
-        return organizationRepository
-                .findAll()
-                .stream()
-                .map(OrganizationMapper::map)
-                .collect(Collectors.toList());
     }
 
 }

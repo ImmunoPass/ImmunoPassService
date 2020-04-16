@@ -10,7 +10,7 @@ import com.immunopass.service.VoucherOrderService;
 
 
 @Component
-@ConditionalOnProperty(value = "cronInstance", havingValue = "true", matchIfMissing = false)
+@ConditionalOnProperty(value = "cronInstance", havingValue = "true")
 public class CronJob {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(CronJob.class);
@@ -24,7 +24,7 @@ public class CronJob {
         this.voucherOrderService = voucherOrderService;
     }
 
-    @Scheduled(fixedDelay = 5000, initialDelay = 5000)
+    @Scheduled(fixedDelay = 60000, initialDelay = 60000)
     public void cronJobSch() {
         if (!isCronInstance) {
             LOGGER.debug("Not a cron instance");

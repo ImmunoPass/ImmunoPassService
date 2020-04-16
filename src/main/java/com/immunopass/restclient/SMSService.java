@@ -80,11 +80,7 @@ public class SMSService {
             ResponseEntity<SendSMSResponse> otpResponse = restTemplate.exchange(
                     requestEntity, SendSMSResponse.class);
 
-            if (otpResponse.getStatusCode() == HttpStatus.OK) {
-                return true;
-            } else {
-                return false;
-            }
+            return otpResponse.getStatusCode() == HttpStatus.OK;
         } catch (Exception e) {
             e.printStackTrace();
             return false;

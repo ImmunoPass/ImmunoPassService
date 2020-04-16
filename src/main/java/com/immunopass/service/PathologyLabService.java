@@ -1,6 +1,8 @@
 package com.immunopass.service;
 
 import javax.validation.constraints.NotNull;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -18,6 +20,8 @@ import com.immunopass.repository.PathologyLabRepository;
 
 @Service
 public class PathologyLabService implements PathologyLabController {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(AccountService.class);
 
     @Autowired
     private PathologyLabRepository pathologyLabRepository;

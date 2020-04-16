@@ -19,7 +19,7 @@ import lombok.NoArgsConstructor;
 
 
 @Entity
-@Table(schema = "immunopass", name = "order")
+@Table(schema = "immunopass", name = "voucher_order")
 @Builder
 @AllArgsConstructor(access = AccessLevel.PACKAGE)
 @NoArgsConstructor(access = AccessLevel.PACKAGE)

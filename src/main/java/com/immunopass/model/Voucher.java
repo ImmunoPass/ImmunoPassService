@@ -1,6 +1,8 @@
 package com.immunopass.model;
 
 import javax.validation.constraints.NotNull;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.immunopass.enums.IDType;
 import com.immunopass.enums.VoucherStatus;
 import lombok.Builder;
@@ -10,6 +12,8 @@ import lombok.Getter;
 @Getter
 @Builder
 @NotNull
+@JsonIgnoreProperties(ignoreUnknown=true)
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class Voucher {
     private final Long id;
     private final String voucherCode;
@@ -26,6 +30,4 @@ public class Voucher {
     private final Long redeemedPathologyLabId;
     private final Long orderId;
     private final Long immunopassId;
-    private final Long retryCount;
-    private final String lastFailureReason;
 }

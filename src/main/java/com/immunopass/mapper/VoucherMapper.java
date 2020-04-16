@@ -23,8 +23,6 @@ public class VoucherMapper {
                 .redeemedAccountId(voucherEntity.getRedeemedAccountId())
                 .redeemedPathologyLabId(voucherEntity.getRedeemedPathologyLabId())
                 .orderId(voucherEntity.getIssuerAccountId())
-                .retryCount(voucherEntity.getRetryCount())
-                .lastFailureReason(voucherEntity.getLastFailureReason())
                 .build();
     }
 }

@@ -12,6 +12,8 @@ import java.util.stream.Collectors;
 import org.apache.commons.lang3.EnumUtils;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -26,7 +28,9 @@ import com.immunopass.enums.IDType;
 import com.immunopass.enums.OrderStatus;
 import com.immunopass.enums.VoucherStatus;
 import com.immunopass.mapper.VoucherMapper;
+import com.immunopass.mapper.VoucherOrderMapper;
 import com.immunopass.model.Account;
+import com.immunopass.model.VoucherOrder;
 import com.immunopass.repository.OrganizationRepository;
 import com.immunopass.repository.VoucherOrderRepository;
 import com.immunopass.repository.VoucherRepository;
@@ -36,6 +40,9 @@ import com.immunopass.util.S3Util;
 
 @Service
 public class VoucherOrderService implements VoucherOrderController {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(AccountService.class);
+
     private final VoucherOrderRepository voucherOrderRepository;
     private final OrganizationRepository organizationRepository;
     private final VoucherRepository voucherRepository;
@@ -61,7 +68,7 @@ public class VoucherOrderService implements VoucherOrderController {
     }
 
     @Override
-    public void createVoucherOrder(MultipartFile file) {
+    public VoucherOrder createVoucherOrder(MultipartFile file) {
         Account account = (Account) SecurityContextHolder.getContext().getAuthentication()
                 .getPrincipal();
         OrganizationEntity organizationEntity =
@@ -95,6 +102,7 @@ public class VoucherOrderService implements VoucherOrderController {
                     "text/csv",
                     String.format("voucher_order_%s.csv", UUID.randomUUID().toString()));
         } catch (Exception e) {
+            LOGGER.error("Error uploading the file to the server.", e);
             throw new ResponseStatusException(
                     HttpStatus.INTERNAL_SERVER_ERROR,
                     "Error uploading the file to the server.");
@@ -109,7 +117,8 @@ public class VoucherOrderService implements VoucherOrderController {
                 .build();
         organizationRepository.save(organizationEntity);
         organizationEntity.setAllotedVouchers(organizationEntity.getAllotedVouchers() + csvRecords.size());
-        voucherOrderRepository.save(voucherOrderEntity);
+        voucherOrderEntity = voucherOrderRepository.save(voucherOrderEntity);
+        return VoucherOrderMapper.map(voucherOrderEntity);
     }
 
     private String validateCsvRecord(String record) {
@@ -190,6 +199,7 @@ public class VoucherOrderService implements VoucherOrderController {
                             .userGovernmentId(fields[ID_CARD_NUMBER_INDEX])
                             .userEmpId(fields[EMP_ID_INDEX])
                             .status(VoucherStatus.ALLOTTED)
+                            .retryCount(0)
                             .issuerAccountId(voucherOrderEntity.getCreatedAccountId())
                             .issuerOrganizationId(voucherOrderEntity.getCreatedOrganizationId())
                             .build();

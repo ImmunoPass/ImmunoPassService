@@ -1,6 +1,8 @@
 package com.immunopass.service;
 
 import org.apache.commons.lang3.RandomStringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -16,6 +18,8 @@ import com.immunopass.restclient.SMSService;
 
 @Service
 public class ImmunopassService implements ImmunopassController {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(AccountService.class);
 
     @Autowired
     private ImmunopassRepository immunopassRepository;
