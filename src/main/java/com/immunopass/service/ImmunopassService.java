@@ -1,6 +1,7 @@
 package com.immunopass.service;
 
 import org.apache.commons.lang3.RandomStringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -57,18 +58,19 @@ public class ImmunopassService implements ImmunopassController {
     }
 
     @Override public Immunopass verifyImmunopass(final VerifyImmunopassRequest immunopass) {
-        if (immunopass.getImmunopassCode() != null) {
+        if (StringUtils.isNotBlank(immunopass.getImmunopassCode())) {
             return immunopassRepository
                     .findByImmunopassCode(immunopass.getImmunopassCode())
                     .map(ImmunopassMapper::map)
-                    .orElse(null);
-        } else if (immunopass.getUserMobile() != null) {
+                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "No immunopass found!"));
+        } else if (StringUtils.isNotBlank(immunopass.getUserMobile())) {
             return immunopassRepository
                     .findByUserMobile(immunopass.getUserMobile())
                     .map(ImmunopassMapper::map)
-                    .orElse(null);
+                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "No immunopass found!"));
         } else {
-            return null;
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                    "Missing required parameters: One of the Mobile Number or Immunopass Code is mandatory!");
         }
     }
 
