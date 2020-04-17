@@ -106,10 +106,10 @@ ALTER TABLE immunopass.immunopass OWNER TO elemential;
 
 --
 -- TOC entry 219 (class 1259 OID 16655)
--- Name: order_id_seq; Type: SEQUENCE; Schema: immunopass; Owner: elemential
+-- Name: voucher_order_id_seq; Type: SEQUENCE; Schema: immunopass; Owner: elemential
 --
 
-CREATE SEQUENCE immunopass.order_id_seq
+CREATE SEQUENCE immunopass.voucher_order_id_seq
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -117,7 +117,7 @@ CREATE SEQUENCE immunopass.order_id_seq
     CACHE 1;
 
 
-ALTER TABLE immunopass.order_id_seq OWNER TO elemential;
+ALTER TABLE immunopass.voucher_order_id_seq OWNER TO elemential;
 
 --
 -- TOC entry 220 (class 1259 OID 16657)
@@ -281,7 +281,7 @@ ALTER TABLE immunopass.voucher OWNER TO elemential;
 --
 
 CREATE TABLE immunopass.voucher_order (
-    id bigint DEFAULT nextval('immunopass.order_id_seq'::regclass) NOT NULL,
+    id bigint DEFAULT nextval('immunopass.voucher_order_id_seq'::regclass) NOT NULL,
     voucher_count integer NOT NULL,
     uploaded_file character varying(255) NOT NULL,
     created_account_id bigint NOT NULL,
