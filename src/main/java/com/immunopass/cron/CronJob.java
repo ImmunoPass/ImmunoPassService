@@ -16,12 +16,12 @@ public class CronJob {
     private static final Logger LOGGER = LoggerFactory.getLogger(CronJob.class);
 
     private final VoucherOrderService voucherOrderService;
+    private final boolean isCronInstance;
 
-    @Value("${cronInstance}")
-    private boolean isCronInstance;
-
-    public CronJob(VoucherOrderService voucherOrderService) {
+    public CronJob(final VoucherOrderService voucherOrderService,
+            @Value("${cronInstance}") final boolean isCronInstance) {
         this.voucherOrderService = voucherOrderService;
+        this.isCronInstance = isCronInstance;
     }
 
     @Scheduled(fixedDelay = 60000, initialDelay = 60000)

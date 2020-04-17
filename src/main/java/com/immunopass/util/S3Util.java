@@ -19,7 +19,6 @@ import com.amazonaws.services.s3.model.ObjectMetadata;
 @Service
 public class S3Util {
 
-    private final AWSStaticCredentialsProvider credentials;
     private final AmazonS3 s3Client;
     private final String bucket;
 
@@ -28,7 +27,8 @@ public class S3Util {
             @Value("${aws.s3.secretAccessKey}") String secretAccessKey,
             @Value("${aws.s3.region}") String region,
             @Value("${aws.s3.bucket}") String bucket) {
-        this.credentials = new AWSStaticCredentialsProvider(new BasicAWSCredentials(accessKeyId, secretAccessKey));
+        AWSStaticCredentialsProvider credentials =
+                new AWSStaticCredentialsProvider(new BasicAWSCredentials(accessKeyId, secretAccessKey));
         this.s3Client = AmazonS3ClientBuilder.standard().withCredentials(credentials).withRegion(region).build();
         this.bucket = bucket;
     }

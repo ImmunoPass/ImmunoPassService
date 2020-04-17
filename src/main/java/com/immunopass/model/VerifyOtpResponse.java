@@ -10,5 +10,5 @@ import lombok.Getter;
 @JsonIgnoreProperties(ignoreUnknown=true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class VerifyOtpResponse {
-    private String accessToken;
+    private final String accessToken;
 }

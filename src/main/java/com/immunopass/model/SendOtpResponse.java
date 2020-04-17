@@ -12,9 +12,9 @@ import lombok.Getter;
 @JsonIgnoreProperties(ignoreUnknown=true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class SendOtpResponse {
-    private String validTill;
-    private String identifier;
-    private IdentifierType identifierType;
-    private Integer retryCount;
-    private OtpStatus status;
+    private final String validTill;
+    private final String identifier;
+    private final IdentifierType identifierType;
+    private final Integer retryCount;
+    private final OtpStatus status;
 }
