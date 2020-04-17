@@ -4,7 +4,6 @@ import java.time.LocalDateTime;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -28,16 +27,20 @@ import com.immunopass.util.JwtUtil;
 @Service
 public class OtpService implements OtpController {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(AccountService.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(OtpService.class);
 
-    @Autowired
-    private AccountRepository accountRepository;
-    @Autowired
-    private OtpRepository otpRepository;
-    @Autowired
-    private JwtUtil jwtUtil;
-    @Autowired
-    private SMSService smsService;
+    private final AccountRepository accountRepository;
+    private final OtpRepository otpRepository;
+    private final JwtUtil jwtUtil;
+    private final SMSService smsService;
+
+    public OtpService(final AccountRepository accountRepository, final OtpRepository otpRepository,
+            final JwtUtil jwtUtil, final SMSService smsService) {
+        this.accountRepository = accountRepository;
+        this.otpRepository = otpRepository;
+        this.jwtUtil = jwtUtil;
+        this.smsService = smsService;
+    }
 
     @Override
     public SendOtpResponse sendOtp(@RequestBody SendOtpRequest otpRequest) {
@@ -48,6 +51,7 @@ public class OtpService implements OtpController {
                         if (accountEntity.getOrganizationId() != null) {
                             return true;
                         } else {
+                            LOGGER.error("User account isn't linked to any organization.");
                             throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
                                     "User account isn't linked to any organization.");
                         }
@@ -55,10 +59,12 @@ public class OtpService implements OtpController {
                         if (accountEntity.getPathologyLabId() != null) {
                             return true;
                         } else {
+                            LOGGER.error("User account isn't linked to any pathology lab.");
                             throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
                                     "User account isn't linked to any pathology lab.");
                         }
                     } else {
+                        LOGGER.error("Invalid account type in Send OTP Request!");
                         return false;
                     }
                 })
@@ -66,8 +72,10 @@ public class OtpService implements OtpController {
                         sendOtp(accountEntity.getIdentifier(),
                                 accountEntity.getIdentifierType(),
                                 accountEntity.getName()))
-                .orElseThrow(() ->
-                        new ResponseStatusException(HttpStatus.BAD_REQUEST, "User account doesn't exist."));
+                .orElseThrow(() -> {
+                    LOGGER.error("User account doesn't exist.");
+                    return new ResponseStatusException(HttpStatus.BAD_REQUEST, "User account doesn't exist.");
+                });
     }
 
     private SendOtpResponse sendOtp(String identifier, IdentifierType identifierType, String name) {
@@ -78,14 +86,17 @@ public class OtpService implements OtpController {
                 .map(otpEntity -> {
                     if (otpEntity.getRetryCount() < 2) {
                         otpEntity.setRetryCount(otpEntity.getRetryCount() + 1);
+                        LOGGER.info("Sending existing OTP to the user.");
                         return sendOtp(name, otpRepository.save(otpEntity));
                     } else {
+                        LOGGER.error("Retry attempts over for Send OTP.");
                         throw new ResponseStatusException(
                                 HttpStatus.BAD_REQUEST,
                                 "Retry attempts over. Please try after 15 minutes.");
                     }
                 })
                 .orElseGet(() -> {
+                    LOGGER.info("Sending a new OTP to the user.");
                     OtpEntity otpEntity = OtpEntity.builder()
                             .otp(RandomStringUtils.randomNumeric(6))
                             .status(OtpStatus.UNVERIFIED)
@@ -110,6 +121,7 @@ public class OtpService implements OtpController {
                     .validTill(otpEntity.getValidTill().toString())
                     .build();
         } else {
+            LOGGER.error("Failure while sending the OTP SMS to the user.");
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Something went wrong while sending OTP.");
         }
     }
@@ -126,10 +138,12 @@ public class OtpService implements OtpController {
                         otpEntity.setStatus(OtpStatus.VERIFIED);
                         return otpRepository.save(otpEntity);
                     } else if (otpEntity.getVerificationAttempts() < 3) {
+                        LOGGER.error("OTP verification failed! Still some attempts left.");
                         otpEntity.setVerificationAttempts(otpEntity.getVerificationAttempts() + 1);
                         otpRepository.save(otpEntity);
                         return null;
                     } else {
+                        LOGGER.error("OTP verification failed! All attempts over. Marking the OTP as INVALID.");
                         otpEntity.setVerificationAttempts(otpEntity.getVerificationAttempts() + 1);
                         otpEntity.setStatus(OtpStatus.INVALID);
                         otpRepository.save(otpEntity);

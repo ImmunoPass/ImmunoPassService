@@ -17,9 +17,9 @@ import lombok.Getter;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class SendOtpRequest {
     @NotBlank(message = "Invalid value")
-    private String identifier;
+    private final String identifier;
     @NotNull
-    private IdentifierType identifierType;
+    private final IdentifierType identifierType;
     @NotNull
-    private AccountType accountType;
+    private final AccountType accountType;
 }

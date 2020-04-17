@@ -41,7 +41,12 @@ import com.immunopass.util.S3Util;
 @Service
 public class VoucherOrderService implements VoucherOrderController {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(AccountService.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(VoucherOrderService.class);
+    private static final int NAME_INDEX = 0;
+    private static final int MOBILE_NUMBER_INDEX = 1;
+    private static final int ID_CARD_TYPE_INDEX = 2;
+    private static final int ID_CARD_NUMBER_INDEX = 3;
+    private static final int EMP_ID_INDEX = 4;
 
     private final VoucherOrderRepository voucherOrderRepository;
     private final OrganizationRepository organizationRepository;
@@ -49,17 +54,11 @@ public class VoucherOrderService implements VoucherOrderController {
     private final SMSService smsService;
     private final S3Util s3Utill;
 
-    private static final int NAME_INDEX = 0;
-    private static final int MOBILE_NUMBER_INDEX = 1;
-    private static final int ID_CARD_TYPE_INDEX = 2;
-    private static final int ID_CARD_NUMBER_INDEX = 3;
-    private static final int EMP_ID_INDEX = 4;
-
-    public VoucherOrderService(VoucherOrderRepository voucherOrderRepository,
-            OrganizationRepository organizationRepository,
-            VoucherRepository voucherRepository,
-            SMSService smsService,
-            S3Util s3Utill) {
+    public VoucherOrderService(final VoucherOrderRepository voucherOrderRepository,
+            final OrganizationRepository organizationRepository,
+            final VoucherRepository voucherRepository,
+            final SMSService smsService,
+            final S3Util s3Utill) {
         this.voucherOrderRepository = voucherOrderRepository;
         this.organizationRepository = organizationRepository;
         this.voucherRepository = voucherRepository;
@@ -75,19 +74,23 @@ public class VoucherOrderService implements VoucherOrderController {
                 organizationRepository
                         .findById(account.getOrganizationId())
                         .filter(organizationEntity1 -> organizationEntity1.getStatus() == EntityStatus.ACTIVE)
-                        .orElseThrow(() -> new ResponseStatusException(
-                                HttpStatus.FORBIDDEN,
-                                "User account isn't linked to any active organization."));
+                        .orElseThrow(() -> {
+                            LOGGER.error("User account isn't linked to any active organization.");
+                            return new ResponseStatusException(
+                                    HttpStatus.FORBIDDEN,
+                                    "User account isn't linked to any active organization.");
+                        });
         List<String> csvRecords;
         try (BufferedReader br =
                 new BufferedReader(new InputStreamReader(file.getInputStream()))) {
             csvRecords = br.lines().skip(1).map(this::validateCsvRecord).collect(Collectors.toList());
         } catch (IOException e) {
-            throw new ResponseStatusException(
-                    HttpStatus.BAD_REQUEST,
-                    "Error reading the file: " + e.getLocalizedMessage());
+            LOGGER.error("Error reading the voucher order file.", e);
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Error reading the file.", e);
         }
         if (csvRecords.size() > organizationEntity.getTotalVouchers() - organizationEntity.getAllotedVouchers()) {
+            LOGGER.error("The number of records present in the CSV file is greater than the available vouchers to the "
+                    + "organization.");
             throw new ResponseStatusException(
                     HttpStatus.BAD_REQUEST,
                     "The number of records present in the CSV file is greater than the available vouchers to the "
@@ -104,8 +107,7 @@ public class VoucherOrderService implements VoucherOrderController {
         } catch (Exception e) {
             LOGGER.error("Error uploading the file to the server.", e);
             throw new ResponseStatusException(
-                    HttpStatus.INTERNAL_SERVER_ERROR,
-                    "Error uploading the file to the server.");
+                    HttpStatus.INTERNAL_SERVER_ERROR, "Error uploading the file to the server.", e);
         }
         VoucherOrderEntity voucherOrderEntity = VoucherOrderEntity.builder()
                 .status(OrderStatus.CREATED)
@@ -132,45 +134,40 @@ public class VoucherOrderService implements VoucherOrderController {
         // Validate name
         name = name.replaceAll("[^a-zA-Z ]", "").trim();
         if (StringUtils.isEmpty(name) || name.length() > 40) {
-            throw new ResponseStatusException(
-                    HttpStatus.BAD_REQUEST,
-                    "Name is invalid.");
+            LOGGER.error("Name is invalid.");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Name is invalid.");
         }
         fields[NAME_INDEX] = name;
 
         // Validate mobile phone number
         mobileNumber = mobileNumber.replaceAll("[^0-9]", "").trim();
         if (mobileNumber.length() != 10) {
-            throw new ResponseStatusException(
-                    HttpStatus.BAD_REQUEST,
-                    "Mobile phone number is invalid.");
+            LOGGER.error("Mobile phone number is invalid.");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Mobile phone number is invalid.");
         }
         fields[MOBILE_NUMBER_INDEX] = mobileNumber;
 
         // Validate Id Card Type
         idCardType = StringUtils.trim(idCardType);
         if (!EnumUtils.isValidEnum(IDType.class, idCardType)) {
-            throw new ResponseStatusException(
-                    HttpStatus.BAD_REQUEST,
-                    "Invalid Id Card Type.");
+            LOGGER.error("Invalid Id Card Type.");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid Id Card Type.");
         }
         fields[ID_CARD_TYPE_INDEX] = idCardType;
 
         // Validate Id Card Number
         idCardNumber = StringUtils.trim(idCardNumber);
         if (idCardNumber.length() == 0 || idCardNumber.length() > 40) {
-            throw new ResponseStatusException(
-                    HttpStatus.BAD_REQUEST,
-                    "Invalid Id Card Number.");
+            LOGGER.error("Invalid Id Card Number.");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid Id Card Number.");
         }
         fields[ID_CARD_NUMBER_INDEX] = idCardNumber;
 
         // Validate Employee Id
         employeeId = StringUtils.trim(employeeId);
         if (employeeId.length() == 0 || employeeId.length() > 40) {
-            throw new ResponseStatusException(
-                    HttpStatus.BAD_REQUEST,
-                    "Invalid Employee Id.");
+            LOGGER.error("Invalid Employee Id.");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid Employee Id.");
         }
         fields[EMP_ID_INDEX] = employeeId;
         return StringUtils.join(fields, ",");
@@ -225,12 +222,14 @@ public class VoucherOrderService implements VoucherOrderController {
                         voucherEntity.setStatus(VoucherStatus.PROCESSED);
                         voucherRepository.save(voucherEntity);
                     } else {
+                        LOGGER.error("Failure in sending voucher SMS.");
                         failure = true;
                         voucherEntity.setRetryCount(voucherEntity.getRetryCount() + 1);
                         voucherEntity.setLastFailureReason("Failed to send sms");
                         voucherRepository.save(voucherEntity);
                     }
                 } catch (Exception e) {
+                    LOGGER.error("Error occured while updating the voucher entity.", e);
                     failure = true;
                     voucherEntity.setRetryCount(voucherEntity.getRetryCount() + 1);
                     voucherEntity.setLastFailureReason(e.getLocalizedMessage());

@@ -2,7 +2,6 @@ package com.immunopass.service;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -20,10 +19,13 @@ import com.immunopass.repository.OrganizationRepository;
 @Service
 public class OrganizationService implements OrganizationController {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(AccountService.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(OrganizationService.class);
 
-    @Autowired
-    private OrganizationRepository organizationRepository;
+    private final OrganizationRepository organizationRepository;
+
+    public OrganizationService(final OrganizationRepository organizationRepository) {
+        this.organizationRepository = organizationRepository;
+    }
 
     @Override
     public Organization createOrganization(final Organization organization) {
@@ -50,12 +52,18 @@ public class OrganizationService implements OrganizationController {
                         .findById(account.getOrganizationId())
                         .filter(organization -> organization.getStatus() == EntityStatus.ACTIVE)
                         .map(OrganizationMapper::map)
-                        .orElseThrow(() ->
-                                new ResponseStatusException(HttpStatus.NOT_FOUND, "Organization doesn't exist."));
+                        .orElseThrow(() -> {
+                            LOGGER.error("Organization for the logged in user either doesn't exist in the system now "
+                                    + "or it's not ACTIVE.");
+                            return new ResponseStatusException(HttpStatus.NOT_FOUND, "Organization doesn't exist.");
+                        });
             } else {
+                LOGGER.error("User doesn't belong to any organization.");
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "User doesn't belong to any organization.");
             }
         } else {
+            LOGGER.error("Get Organization API doesn't support non logged in user right now. Received request for the "
+                    + "non logged in user.");
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid Organization ID.");
         }
     }

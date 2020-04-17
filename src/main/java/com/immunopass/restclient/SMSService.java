@@ -6,6 +6,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -23,14 +25,15 @@ import com.immunopass.model.Voucher;
 @Service
 public class SMSService {
 
-    private RestTemplate restTemplate;
+    private static final Logger LOGGER = LoggerFactory.getLogger(SMSService.class);
 
-    @Value("${sms.endpoint}")
-    private String endpoint;
-    @Value("${sms.auth}")
-    private String auth;
+    private final RestTemplate restTemplate;
+    private final String endpoint;
+    private final String auth;
 
-    public SMSService() {
+    public SMSService(@Value("${sms.endpoint}") final String endpoint, @Value("${sms.auth}") final String auth) {
+        this.endpoint = endpoint;
+        this.auth = auth;
         restTemplate = new RestTemplate();
         List<HttpMessageConverter<?>> messageConverters = new ArrayList<>();
         //Add the Jackson Message converter
@@ -61,12 +64,12 @@ public class SMSService {
         return restExchange(request, "/v1/sms/send-voucher");
     }
 
-    public boolean sendImmunoPassSMS(String to, String token, String status) {
+    public void sendImmunoPassSMS(String to, String token, String status) {
         ImmunoPassRequest passRequest = ImmunoPassRequest.builder()
                 .to(to)
                 .token(token)
                 .userStatus(status).build();
-        return restExchange(passRequest, "/v1/sms/send-pass");
+        restExchange(passRequest, "/v1/sms/send-pass");
     }
 
     private boolean restExchange(Object request, String endpointPath) {
@@ -82,7 +85,7 @@ public class SMSService {
 
             return otpResponse.getStatusCode() == HttpStatus.OK;
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error("Error in sending the SMS.", e);
             return false;
         }
     }

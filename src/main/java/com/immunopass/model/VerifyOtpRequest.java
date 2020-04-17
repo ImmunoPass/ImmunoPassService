@@ -14,7 +14,7 @@ import lombok.Getter;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class VerifyOtpRequest {
     @NotBlank
-    private String otp;
+    private final String otp;
     @NotBlank
-    private String identifier;
+    private final String identifier;
 }
