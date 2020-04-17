@@ -44,7 +44,7 @@ public class ImmunopassService implements ImmunopassController {
                 ImmunopassEntity.builder()
                         .userName(immunopass.getUserName())
                         .userMobile(immunopass.getUserMobile())
-                        .userEmpId(immunopass.getUserMobile())
+                        .userEmpId(immunopass.getUserEmpId())
                         .userGovernmentId(immunopass.getUserGovernmentId())
                         .userLocation(immunopass.getUserLocation())
                         .immunopassCode(immunopassCode)
